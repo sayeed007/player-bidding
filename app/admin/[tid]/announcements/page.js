@@ -31,7 +31,7 @@ export default function Announcements({ params }) {
         {!data ? error ? <Empty>Could not load announcements.</Empty> : <Loading /> : !list.length ? <Empty>No announcements yet.</Empty> : (
           <ul className="m-0 grid list-none gap-2 p-0">
             {list.map((a) => (
-              <li key={a._id} className="flex gap-3 rounded-xl border border-line bg-surface2/40 p-3">
+              <li key={a._id} className="flex gap-3 rounded-xl border border-line bg-surface2/40 p-3 shadow-[inset_3px_0_0_rgb(var(--accent))]">
                 <Megaphone size={18} className="mt-0.5 shrink-0 text-accent" aria-hidden />
                 <div className="min-w-0"><div className="break-words font-semibold">{a.title}</div>
                   <p className="m-0 whitespace-pre-wrap break-words text-sm">{a.text}</p>

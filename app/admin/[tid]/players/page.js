@@ -1,9 +1,9 @@
 'use client';
 import { use, useEffect, useRef, useState } from 'react';
-import { Plus, Upload, Download, Images, Camera, ImagePlus, Search, ChevronRight, Check, X, Pause, Play, UserMinus, Pencil, Loader2 } from 'lucide-react';
+import { Plus, Upload, Download, Images, Camera, ImagePlus, Search, ChevronRight, Check, X, Pause, Play, UserMinus, Pencil, Loader2, LayoutGrid, List } from 'lucide-react';
 import { call, useApi, parseCsv, downloadCsv, uploadImage } from '@/lib/client';
 import { Card, Button, Field, Msg, PageHeader, Table, Segmented, Sheet, Avatar, Badge, StatusBadge, Empty, Skeleton, useFlash, money } from '@/components/ui';
-import { CatChip } from '@/components/cards';
+import { CatChip, PlayerTile } from '@/components/cards';
 import { POSITIONS, statusIndex, statusLabel, effectivePrice, matchPhotos } from '@/lib/setup';
 
 const FILTERS = [['', 'All'], ['pending', 'Pending'], ['approved', 'Approved'], ['hold', 'Hold'], ['in_auction', 'In auction'], ['sold', 'Sold'], ['unsold', 'Unsold'], ['withdrawn', 'Withdrawn']];
@@ -23,6 +23,7 @@ export default function Players({ params }) {
   const [imp, setImp] = useState(null);
   const [bulk, setBulk] = useState(false);
   const [busy, setBusy] = useState(null);
+  const [view, setView] = useState('list');
   const [msg, flash] = useFlash();
   const gallery = useRef(null), camera = useRef(null), target = useRef(null);
   useEffect(() => { const s = new URLSearchParams(location.search).get('status'); if (s) setFlt((x) => ({ ...x, status: s })); }, []);
@@ -77,11 +78,11 @@ export default function Players({ params }) {
   })));
   const noPhoto = players.filter((p) => !p.photo).length;
 
-  const photoBtn = (p, size = 48) => (
+  const photoBtn = (p, size = 64) => (
     <button type="button" aria-label={`Change photo for ${p.name}`} onClick={() => pick(p, false)}
       className="relative !min-h-0 shrink-0 !rounded-full !bg-transparent !p-0">
       <Avatar src={p.photo} name={p.name} size={size} />
-      <span className="absolute -bottom-0.5 -right-0.5 grid h-5 w-5 place-items-center rounded-full border border-surface bg-primary text-primary-fg">
+      <span className="absolute -bottom-0.5 -right-0.5 grid h-5 w-5 place-items-center rounded-full border border-surface grad-volt">
         {busy === p._id ? <Loader2 size={11} className="animate-spin" aria-hidden /> : <Camera size={11} aria-hidden />}
       </span>
     </button>
@@ -97,9 +98,10 @@ export default function Players({ params }) {
 
       <div className="mb-3 flex flex-wrap gap-2">
         <Button variant="secondary" size="md" icon={Images} onClick={() => setBulk((v) => !v)}>Bulk photos</Button>
-        <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-xl border border-line bg-surface px-3 text-sm font-semibold hover:bg-surface2">
+        <label className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-xl border border-line bg-surface2/60 px-3 text-sm font-semibold hover:bg-surface2">
           <Upload size={15} aria-hidden />Import CSV<input type="file" accept=".csv,text/csv" hidden onChange={importFile} /></label>
         <Button variant="secondary" size="md" icon={Download} onClick={exportCsv}>Export CSV</Button>
+        <Segmented className="ml-auto" value={view} onChange={setView} options={[{ value: 'list', label: <span className="inline-flex items-center gap-1.5"><List size={15} aria-hidden />List</span> }, { value: 'grid', label: <span className="inline-flex items-center gap-1.5"><LayoutGrid size={15} aria-hidden />Photos</span> }]} />
       </div>
       {imp?.skipped.length > 0 && (
         <details className="mb-3 rounded-xl border border-line bg-surface p-3 text-sm"><summary className="cursor-pointer text-danger">{imp.skipped.length} rows skipped</summary>
@@ -126,14 +128,25 @@ export default function Players({ params }) {
       {error && <div role="alert" className="my-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-danger/20 bg-danger/10 p-3 text-sm text-danger"><span className="min-w-0 break-words">{error}</span><Button variant="secondary" onClick={reload}>Retry</Button></div>}
       {!data ? error ? <Empty>Could not load players.</Empty> : <div className="grid gap-2"><Skeleton className="h-[72px]" /><Skeleton className="h-[72px]" /><Skeleton className="h-[72px]" /></div>
         : !players.length ? <Empty>No players match these filters.</Empty> : (
-          <>
+          view === 'grid' ? (
+            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {players.map((p) => (
+                <li key={p._id}>
+                  <button type="button" aria-label={`Manage ${p.name}`} onClick={() => openSel(p)} className="!block !min-h-0 w-full !rounded-2xl !bg-transparent !p-0 text-left !shadow-none">
+                    <PlayerTile player={{ ...p, category: p.category || '?' }} price={p.teamId ? money(p.price) : null} />
+                  </button>
+                  <div className="mt-1 flex items-center justify-between gap-1"><StatusBadge status={p.rejected ? 'rejected' : p.status} />{busy === p._id && <Loader2 size={14} className="animate-spin text-primary" aria-hidden />}</div>
+                </li>
+              ))}
+            </ul>
+          ) : <>
             <ul className="grid gap-2 md:hidden">
               {players.map((p) => (
-                <li key={p._id} className="flex items-center gap-3 rounded-xl border border-line bg-surface p-3">
+                <li key={p._id} className="grad-card flex items-center gap-3 rounded-xl p-3">
                   {photoBtn(p)}
                   <button type="button" onClick={() => openSel(p)} className="!flex !min-h-[48px] min-w-0 flex-1 !items-center !justify-start !gap-2 !bg-transparent !p-0 text-left !font-normal text-fg">
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate font-semibold">{p.name}</span>
+                      <span className="block truncate font-display text-lg font-semibold uppercase tracking-wide">{p.name}</span>
                       <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-muted">
                         <CatChip code={p.category || '?'} />{p.position || '—'}{p.teamId && <> · {money(p.price)}</>}
                       </span>
@@ -145,7 +158,7 @@ export default function Players({ params }) {
             </ul>
             <Card flush className="hidden md:block">
               <Table mobile="scroll" rows={players} cols={[
-                { key: 'photo', label: '', render: (p) => photoBtn(p, 40) },
+                { key: 'photo', label: '', render: (p) => photoBtn(p, 56) },
                 { key: 'name', label: 'Name', render: (p) => <span className="font-medium">{p.name}</span> },
                 { key: 'position', label: 'Position' },
                 { key: 'category', label: 'Cat', render: (p) => <CatChip code={p.category || '?'} /> },
@@ -165,7 +178,7 @@ export default function Players({ params }) {
           <div className="grid gap-3">
             <Msg {...msg} />
             <div className="flex items-center gap-3">
-              <Avatar src={sel.photo} name={sel.name} size={72} />
+              <Avatar src={sel.photo} name={sel.name} size={88} className="ring-2 ring-primary/70" />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2"><StatusBadge status={sel.rejected ? 'rejected' : sel.status} />{sel.category && <CatChip code={sel.category} />}</div>
                 <p className="mt-1 text-sm text-muted">{sel.position}{sel.position2 ? ` / ${sel.position2}` : ''} · base {money(effectivePrice(sel, t || {}))}</p>
@@ -275,7 +288,7 @@ function BulkPhotos({ tid, onClose, onDone, patch }) {
   return (
     <Card title="Bulk photos" right={<Button variant="ghost" size="md" icon={X} onClick={onClose} aria-label="Close bulk photos">Close</Button>}>
       <p className="mb-3 text-sm text-muted">Select many images named after the player (e.g. <b>Rupok Das.jpg</b>). Names are matched automatically; fix any mismatch before uploading.</p>
-      <label className="flex min-h-[56px] cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-line bg-surface2/40 text-sm font-semibold">
+      <label className="flex min-h-[56px] cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary/50 bg-primary/5 text-sm font-semibold text-primary hover:bg-primary/10">
         <ImagePlus size={18} aria-hidden />{rows.length ? 'Choose different files' : 'Choose photos'}
         <input type="file" accept="image/*" multiple hidden onChange={choose} disabled={running || !data} />
       </label>
@@ -284,8 +297,8 @@ function BulkPhotos({ tid, onClose, onDone, patch }) {
           <p className="mt-3 text-sm"><Badge color="green">{matched.length} matched</Badge> <Badge color={rows.length - matched.length ? 'amber' : 'neutral'}>{rows.length - matched.length} unmatched</Badge> <span className="text-muted">Unmatched files are skipped.</span></p>
           <ul className="mt-2 grid gap-2">
             {rows.map((r) => (
-              <li key={r.id} className="flex items-center gap-3 rounded-xl border border-line p-2">
-                <img src={r.url} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover object-top" />
+              <li key={r.id} className="flex items-center gap-3 rounded-xl border border-line bg-surface2/40 p-2">
+                <img src={r.url} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover object-top" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-xs text-muted">{r.file.name}</p>
                   <select aria-label={`Player for ${r.file.name}`} disabled={running || r.state === 'ok'} value={r.playerId || ''} className="!min-h-[40px] !py-1 text-sm"
@@ -306,7 +319,7 @@ function BulkPhotos({ tid, onClose, onDone, patch }) {
           </ul>
           {(running || okCount > 0) && (
             <div className="mt-3" role="status">
-              <div className="h-2 overflow-hidden rounded-full bg-surface2"><div className="h-full bg-primary transition-all" style={{ width: `${matched.length ? (done / matched.length) * 100 : 0}%` }} /></div>
+              <div className="h-2 overflow-hidden rounded-full bg-surface2"><div className="grad-volt glow-primary h-full transition-all" style={{ width: `${matched.length ? (done / matched.length) * 100 : 0}%` }} /></div>
               <p className="mt-1 text-xs text-muted tabular-nums">{done} / {matched.length} processed · {okCount} saved</p>
             </div>
           )}

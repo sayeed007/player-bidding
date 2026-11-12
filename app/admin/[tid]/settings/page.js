@@ -12,9 +12,9 @@ const NUM = { type: 'number', inputMode: 'numeric' };
 
 function Section({ title, hint, defaultOpen = false, children }) {
   return (
-    <details open={defaultOpen} className="group my-3 rounded-2xl border border-line bg-surface shadow-card">
+    <details open={defaultOpen} className="group my-3 grad-card rounded-2xl shadow-card open:border-primary/40">
       <summary className="flex min-h-[56px] cursor-pointer list-none items-center gap-2 px-4 [&::-webkit-details-marker]:hidden">
-        <span className="min-w-0 flex-1"><span className="block font-display text-base font-semibold">{title}</span>{hint && <span className="block text-xs text-muted">{hint}</span>}</span>
+        <span className="min-w-0 flex-1"><span className="block font-display text-lg font-semibold uppercase tracking-wide">{title}</span>{hint && <span className="block text-xs text-muted">{hint}</span>}</span>
         <ChevronDown size={18} className="text-muted transition group-open:rotate-180" aria-hidden />
       </summary>
       <div className="border-t border-line p-4">{children}</div>
@@ -57,11 +57,12 @@ export default function Settings({ params }) {
       <PageHeader title="Settings" subtitle="Configure the competition and review readiness before changing its status" right={<StatusBadge status={t.status} />} />
       <Msg {...msg} />
       <Section title="Lifecycle" hint={`Now: ${statusLabel(t.status)}`} defaultOpen>
+        <div className="mb-3 h-2 overflow-hidden rounded-full bg-surface2" aria-hidden><div className="grad-volt glow-primary h-full rounded-full transition-all" style={{ width: `${((cur + 1) / STATUS_ORDER.length) * 100}%` }} /></div>
         <ol className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2">
           {STATUS_ORDER.map((s, i) => (
             <li key={s} aria-current={i === cur ? 'step' : undefined}
               className={clsx('inline-flex min-h-[36px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-xs font-medium',
-                i === cur ? 'bg-primary text-primary-fg' : i < cur ? 'bg-success/15 text-success' : 'bg-surface2 text-muted')}>
+                i === cur ? 'grad-volt glow-primary font-bold' : i < cur ? 'bg-success/15 text-success' : 'bg-surface2 text-muted')}>
               {i < cur ? <Check size={13} aria-hidden /> : <span className="tabular-nums">{i + 1}</span>}{statusLabel(s)}
             </li>
           ))}
@@ -172,9 +173,9 @@ export default function Settings({ params }) {
         </div>
       </Section>
 
-      <div className="sticky bottom-[calc(64px+env(safe-area-inset-bottom)+12px)] z-20 mt-4 rounded-2xl border border-line bg-surface/95 p-3 shadow-card backdrop-blur md:bottom-4">
+      <div className="sticky bottom-[calc(64px+env(safe-area-inset-bottom)+12px)] z-20 mt-4 grad-border rounded-2xl p-3 shadow-card backdrop-blur md:bottom-4">
         <Msg {...msg} />
-        <Button icon={Save} className="w-full" onClick={save}>Save settings</Button>
+        <Button icon={Save} size="lg" className="w-full" onClick={save}>Save settings</Button>
       </div>
     </>
   );

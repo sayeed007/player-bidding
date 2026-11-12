@@ -14,8 +14,8 @@ export default function Spectator({ params }) {
       {error && <p role="alert" className="rounded-xl bg-danger/10 px-3 py-2 text-sm text-danger">Connection issue: {error} (retrying...)</p>}
       {!d ? <Loading /> : <>
         <Card title="Auction progress" className="!my-0"><ProgressBar d={d} /></Card>
-        <div className="grid gap-x-4 lg:grid-cols-[1.2fr_1fr]">
-          <LotHero d={d} />
+        <div className="grid gap-x-4 lg:grid-cols-[1.5fr_1fr]">
+          <LotHero d={d} split />
           <div>
             <Card title="Recent bids"><BidsList d={d} /></Card>
             <Card title="Recent sales"><SalesList d={d} /></Card>

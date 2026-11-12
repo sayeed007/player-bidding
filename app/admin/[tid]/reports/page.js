@@ -15,7 +15,7 @@ export default function Reports({ params }) {
   return (
     <>
       <PageHeader title="Reports" subtitle="Choose a report, review the data, then export or print" />
-      <div className="noprint grid grid-cols-2 items-end gap-3 rounded-2xl border border-line bg-surface p-4 sm:flex sm:flex-wrap">
+      <div className="noprint grid grid-cols-2 items-end gap-3 grad-card rounded-2xl p-4 sm:flex sm:flex-wrap">
         <Field label="Report" className="col-span-2 min-w-0 flex-1 sm:min-w-[200px] sm:max-w-xs">
           <select value={name} onChange={(e) => setName(e.target.value)}>{NAMES.map((n) => <option key={n} value={n}>{n.replace('-', ' ')}</option>)}</select>
         </Field>

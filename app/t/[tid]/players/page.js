@@ -2,10 +2,10 @@
 import { use, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { useApi } from '@/lib/client';
-import { Button, Card, Empty, PageHeader, Segmented } from '@/components/ui';
-import { CatChip } from '@/components/cards';
-import { Avatar } from '@/components/ui';
-import Link from 'next/link';
+import { Button, Card, Empty, PageHeader } from '@/components/ui';
+import { PlayerTile, CAT } from '@/components/cards';
+import clsx from 'clsx';
+import { price } from '../ops';
 import { arr, byId, Load, FILTER_SELECT } from '../ops';
 
 const PAGE = 24;
@@ -35,8 +35,16 @@ export default function Players({ params }) {
                 <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" aria-hidden />
                 <input type="search" aria-label="Search players" placeholder="Search by player name" value={f.q} onChange={(e) => set('q', e.target.value)} className="!pl-10" />
               </label>
-              <div className="mt-2"><Segmented value={f.category} onChange={(v) => set('category', v)}
-                options={[{ value: '', label: 'All categories' }, ...uniq('category').map((c) => ({ value: c, label: `Cat ${c}` }))]} /></div>
+              <div role="group" aria-label="Category" className="-mx-1 mt-2 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {[['', 'All'], ...uniq('category').map((c) => [c, `Cat ${c}`])].map(([v, l]) => {
+                  const on = f.category === v;
+                  return (
+                    <button key={v || 'all'} type="button" aria-pressed={on} onClick={() => set('category', v)}
+                      className={clsx('!min-h-[44px] shrink-0 !rounded-full !px-4 font-display uppercase tracking-wider', on ? 'glow-primary' : '!bg-surface2 !text-muted !shadow-none hover:!text-fg')}
+                      style={on && v ? { background: `linear-gradient(135deg, ${(CAT[v] || CAT.D).from}, ${(CAT[v] || CAT.D).to})`, color: '#fff', boxShadow: `0 0 20px -4px ${(CAT[v] || CAT.D).from}` } : undefined}>{l}</button>
+                  );
+                })}
+              </div>
               <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <select className={FILTER_SELECT} aria-label="Position" value={f.position} onChange={(e) => set('position', e.target.value)}>
                   <option value="">All positions</option>{uniq('position').map((c) => <option key={c}>{c}</option>)}</select>
@@ -49,21 +57,9 @@ export default function Players({ params }) {
               </div>
             </Card>
             {!rows.length ? <Empty>No players match.</Empty> : (
-              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
                 {rows.slice(0, shown).map((p) => (
-                  <Link key={p._id} href={`/t/${tid}/players/${p._id}`}
-                    aria-label={`View ${p.name}${p.teamId && tm[String(p.teamId)] ? `, ${tm[String(p.teamId)].name}` : ''}`} className="group overflow-hidden rounded-2xl border border-line bg-surface text-fg no-underline shadow-card transition hover:border-primary/50 hover:no-underline">
-                    <div className="relative aspect-square bg-surface2">
-                      {p.photo ? <img src={p.photo} alt={p.name} loading="lazy" className="h-full w-full object-cover object-top" />
-                        : <div className="grid h-full place-items-center"><Avatar name={p.name} size={72} /></div>}
-                      <CatChip code={p.category} className="absolute left-2 top-2" />
-                    </div>
-                    <div className="p-2.5">
-                      <div className="truncate font-semibold">{p.name}</div>
-                      <div className="truncate text-xs text-muted">{p.position || '—'}{tm[String(p.teamId)] && ` · ${tm[String(p.teamId)].name}`}</div>
-                      <div className="mt-1 text-xs font-semibold text-primary">Player details <span aria-hidden>→</span></div>
-                    </div>
-                  </Link>
+                  <PlayerTile key={p._id} player={p} team={tm[String(p.teamId)]} price={price(p.price)} href={`/t/${tid}/players/${p._id}`} />
                 ))}
               </div>
             )}

@@ -34,7 +34,7 @@ export default function AdminLayout({ children }) {
   const [more, setMore] = useState(false);
   const u = data?.user;
   if (!data && !error) return <div className="grid gap-3"><Skeleton className="h-12" /><Skeleton className="h-40" /></div>;
-  const gate = (m) => <div className="mx-auto mt-10 max-w-sm rounded-2xl border border-line bg-surface p-5 text-center text-sm shadow-card">{m}</div>;
+  const gate = (m) => <div className="mx-auto mt-10 max-w-sm grad-border rounded-2xl p-5 text-center text-sm shadow-card">{m}</div>;
   if (!u) return gate(<>Please <Link href="/login">log in</Link> as staff to use the admin area.</>);
   if (!['super', 'organizer', 'auctioneer'].includes(u.role)) return gate(<span className="text-danger">Staff access only.</span>);
   if (tid && u.role !== 'super' && String(u.tournamentId) !== tid) return gate(<><span className="text-danger">You do not manage this tournament.</span> <Link href="/admin">Back</Link></>);
@@ -45,16 +45,16 @@ export default function AdminLayout({ children }) {
   const on = (i) => (i.exact ? path === i.href : path.startsWith(i.href));
   const moreActive = secondary.some(on);
   const linkClass = (active) => clsx('flex min-h-10 items-center gap-2.5 rounded-lg px-3 text-sm font-medium no-underline hover:no-underline',
-    active ? 'bg-emerald-900 text-emerald-50 md:bg-emerald-900' : 'text-emerald-50/80 hover:bg-white/10 hover:text-white');
+    active ? 'bg-primary/15 text-primary shadow-[inset_3px_0_0_rgb(var(--primary)),0_0_18px_-6px_rgb(var(--primary)/.8)]' : 'text-fg/80 hover:bg-white/10 hover:text-white');
   const signOut = () => call('/api/auth/logout', {}).then(() => { location.href = '/'; });
 
   return (
     <div className="admin-workspace -mt-4">
-      <header className="sticky top-0 z-40 -mx-4 border-b border-line bg-surface/95 px-4 py-2 backdrop-blur md:-mx-6 md:px-6">
+      <header className="sticky top-0 z-40 -mx-4 border-b border-line bg-bg/80 px-4 py-2 backdrop-blur md:-mx-6 md:px-6">
         <div className="mx-auto flex min-h-11 max-w-[1440px] items-center gap-3">
           <Link href="/admin" className="flex shrink-0 items-center gap-2 font-display font-bold text-fg no-underline hover:no-underline">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-fg"><Goal size={18} aria-hidden /></span>
-            <span className="hidden sm:inline">NFTMS <span className="font-sans text-xs font-medium text-muted">ADMIN</span></span>
+            <span className="grid h-8 w-8 place-items-center rounded-lg grad-volt glow-primary"><Goal size={18} aria-hidden /></span>
+            <span className="hidden font-display uppercase tracking-wider sm:inline">NFTMS <span className="font-sans text-xs font-medium text-accent">ADMIN</span></span>
           </Link>
           <div className="min-w-0 flex-1 border-l border-line pl-3">
             <div className="truncate text-sm font-semibold">{tid ? tournament?.name || 'Tournament workspace' : 'Platform workspace'}</div>
@@ -72,17 +72,17 @@ export default function AdminLayout({ children }) {
       </header>
 
       <div className="mx-auto md:flex md:max-w-[1440px] md:items-start md:gap-5 md:pt-5">
-        <aside className="noprint sticky top-20 hidden w-56 shrink-0 rounded-2xl bg-emerald-950 p-3 text-emerald-50 shadow-card md:block">
+        <aside className="noprint sticky top-20 hidden w-56 shrink-0 grad-card rounded-2xl p-3 text-fg shadow-card md:block">
           {tid ? <nav aria-label="Admin sections" className="grid gap-1">
-            {u.role === 'super' && <Link href="/admin" className="mb-2 flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm text-emerald-50/70 no-underline hover:bg-white/10 hover:text-white hover:no-underline"><ArrowLeft size={16} aria-hidden />All tournaments</Link>}
+            {u.role === 'super' && <Link href="/admin" className="mb-2 flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm text-muted no-underline hover:bg-white/10 hover:text-white hover:no-underline"><ArrowLeft size={16} aria-hidden />All tournaments</Link>}
             {['Overview', 'Operations', 'Competition', 'Administration'].map((group) => (
               <section key={group} className="grid gap-1">
-                <div className="px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[.14em] text-emerald-50/50">{group}</div>
+                <div className="px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[.14em] text-muted">{group}</div>
                 {items.filter((i) => i.group === group).map((i) => <Link key={i.href} href={i.href} aria-current={on(i) ? 'page' : undefined} className={linkClass(on(i))}><i.Icon size={17} aria-hidden />{i.label}</Link>)}
               </section>
             ))}
           </nav> : <nav aria-label="Platform sections" className="grid gap-1">
-            <div className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-[.14em] text-emerald-50/50">Platform</div>
+            <div className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-[.14em] text-muted">Platform</div>
             {GLOBAL_LINKS.map(({ href, label, Icon }) => <a key={href} href={href} className={linkClass(false)}><Icon size={17} aria-hidden />{label}</a>)}
           </nav>}
         </aside>
@@ -90,16 +90,16 @@ export default function AdminLayout({ children }) {
       </div>
 
       {tid && <>
-        <nav aria-label="Admin sections" className="noprint fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
+        <nav aria-label="Admin sections" className="noprint fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/90 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
           <ul className="mx-auto flex max-w-lg items-stretch justify-around">
             {primary.map((i) => {
               const active = on(i), Icon = i.Icon;
               return <li key={i.href} className="flex-1"><Link href={i.href} aria-current={active ? 'page' : undefined} className={clsx('flex h-16 flex-col items-center justify-center gap-0.5 text-[11px] font-medium no-underline hover:no-underline', active ? 'text-primary' : 'text-muted')}>
-                <span className={clsx('grid h-7 w-12 place-items-center rounded-full', active && 'bg-primary/10')}><Icon size={20} aria-hidden /></span>{i.label}
+                <span className={clsx('grid h-7 w-12 place-items-center rounded-full', active && 'bg-primary/15 shadow-[0_0_16px_-4px_rgb(var(--primary)/.8)]')}><Icon size={20} aria-hidden /></span>{i.label}
               </Link></li>;
             })}
             <li className="flex-1"><button type="button" aria-expanded={more} className={clsx('!h-16 !w-full !flex-col !gap-0.5 !rounded-none !bg-transparent !px-0 !py-0 !text-[11px] !font-medium', moreActive || more ? '!text-primary' : '!text-muted')} onClick={() => setMore(true)}>
-              <span className={clsx('grid h-7 w-12 place-items-center rounded-full', (moreActive || more) && 'bg-primary/10')}><MoreHorizontal size={20} aria-hidden /></span>More
+              <span className={clsx('grid h-7 w-12 place-items-center rounded-full', (moreActive || more) && 'bg-primary/15 shadow-[0_0_16px_-4px_rgb(var(--primary)/.8)]')}><MoreHorizontal size={20} aria-hidden /></span>More
             </button></li>
           </ul>
         </nav>

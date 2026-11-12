@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Target, Handshake, Square, Trophy, ArrowRight, CalendarDays } from 'lucide-react';
 import { useApi } from '@/lib/client';
-import { Card, Stat, Avatar, StatusBadge, Skeleton, PageHeader, money } from '@/components/ui';
+import { Stat, Avatar, StatusBadge, Skeleton, PageHeader, money } from '@/components/ui';
 import { CatChip } from '@/components/cards';
 
 const NOTE = {
@@ -23,7 +23,7 @@ export default function Me() {
   const { data: team } = useApi(p?.teamId ? `/api/t/${tid}/teams/${p.teamId}` : null);
   const { data: t } = useApi(tid ? `/api/t/${tid}` : null);
   const { data: stats } = useApi(pid ? `/api/t/${tid}/stats` : null); // MATCH module; may not exist yet
-  const gate = (x) => <div className="mx-auto mt-10 max-w-sm rounded-2xl border border-line bg-surface p-5 text-center text-sm shadow-card">{x}</div>;
+  const gate = (x) => <div className="mx-auto mt-10 max-w-sm grad-border rounded-2xl p-5 text-center text-sm shadow-card">{x}</div>;
   if (!meD && !meE) return <Skeleton className="h-48" />;
   if (!me) return gate(<>Please <Link href="/login">log in</Link>.</>);
   if (!pid) return gate(<span className="text-muted">This account is not linked to a player profile.</span>);
@@ -32,16 +32,16 @@ export default function Me() {
     <div className="mx-auto max-w-3xl">
       <PageHeader title="My player profile" subtitle="Your registration, team and match performance" />
       {tid && <nav aria-label="Player shortcuts" className="mb-4 flex flex-wrap gap-2 text-sm">
-        <Link href={`/t/${tid}`} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-line bg-surface px-3 font-medium">Tournament overview<ArrowRight size={15} aria-hidden /></Link>
-        <Link href={`/t/${tid}/fixtures`} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-line bg-surface px-3 font-medium"><CalendarDays size={15} aria-hidden />Fixtures</Link>
+        <Link href={`/t/${tid}`} className="inline-flex min-h-11 items-center gap-2 grad-card rounded-xl px-3 font-medium">Tournament overview<ArrowRight size={15} aria-hidden /></Link>
+        <Link href={`/t/${tid}/fixtures`} className="inline-flex min-h-11 items-center gap-2 grad-card rounded-xl px-3 font-medium"><CalendarDays size={15} aria-hidden />Fixtures</Link>
       </nav>}
       {error && <p role="alert" className="mb-3 rounded-xl bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>}
       {!p ? <Skeleton className="h-56" /> : (
-        <Card className="text-center">
+        <section className="grad-border glow-primary rounded-2xl p-5 text-center shadow-card sm:p-8">
           <div className="flex flex-col items-center gap-4">
-            <Avatar src={p.photo} name={p.name} size={112} />
+            <Avatar src={p.photo} name={p.name} size={144} className="ring-4 ring-primary/70 shadow-[0_0_32px_-4px_rgb(var(--primary)/.7)]" />
             <div>
-              <h2 className="m-0 break-words text-2xl font-bold sm:text-3xl">{p.name}</h2>
+              <h2 className="m-0 break-words font-display text-4xl font-bold uppercase tracking-wide sm:text-5xl">{p.name}</h2>
               <p className="mt-1 text-sm text-muted">{t?.name}</p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-2">
@@ -49,14 +49,14 @@ export default function Me() {
               {p.category ? <CatChip code={p.category} /> : <span className="text-xs text-muted">Category to be assigned</span>}
               <span className="text-sm text-muted">{p.position}{p.position2 ? ` / ${p.position2}` : ''}</span>
             </div>
-            <p className="w-full rounded-xl bg-surface2 px-4 py-3 text-sm">{NOTE[p.status]}</p>
+            <p className="w-full rounded-xl bg-surface2/70 px-4 py-3 text-base">{NOTE[p.status]}</p>
             {p.teamId && team && (
-              <Link href={`/t/${tid}/teams/${p.teamId}`} className="flex min-h-14 w-full items-center gap-3 rounded-xl border border-line px-4 py-3 text-left text-fg no-underline hover:bg-surface2 hover:no-underline">
+              <Link href={`/t/${tid}/teams/${p.teamId}`} className="flex min-h-14 w-full items-center gap-3 rounded-xl grad-card px-4 py-3 text-left text-fg no-underline hover:bg-surface2 hover:no-underline">
                 <span className="min-w-0 flex-1"><span className="block text-xs text-muted">My team</span><span className="block break-words font-semibold">{team.team.name}</span></span>{p.price != null && <span className="text-sm tabular-nums text-muted">price {money(p.price)}</span>}<ArrowRight size={18} className="shrink-0 text-muted" aria-hidden />
               </Link>
             )}
           </div>
-        </Card>
+        </section>
       )}
       {mine ? (
         <section aria-labelledby="player-performance" className="mt-5">

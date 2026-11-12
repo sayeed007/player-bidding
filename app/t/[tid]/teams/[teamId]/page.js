@@ -1,8 +1,8 @@
 'use client';
 import { use } from 'react';
 import { useApi } from '@/lib/client';
-import { Avatar, Empty, Stat, money } from '@/components/ui';
-import { PlayerCard } from '@/components/cards';
+import { Avatar, Empty, money } from '@/components/ui';
+import { PlayerTile, CatChip } from '@/components/cards';
 import { arr, byId, Load, MatchCard, SectionTitle, price } from '../../ops';
 
 export default function Team({ params }) {
@@ -21,32 +21,39 @@ export default function Team({ params }) {
       const color = team.color || 'rgb(var(--primary))';
       return (
         <div className="pb-4">
-          <div className="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
-            <div className="h-2" style={{ background: color }} />
-            <div className="flex items-center gap-4 p-4 md:p-6">
-              <Avatar src={team.logo} name={(team.name || '').replace(/^Team\s+/i, '')} color={team.color} size={72} />
+          <div className="relative overflow-hidden rounded-3xl border border-line shadow-card" style={{ background: `linear-gradient(135deg, ${color} -20%, rgb(var(--surface2)) 70%, rgb(var(--surface)) 100%)` }}>
+            <div aria-hidden className="absolute -right-8 -top-8 h-40 w-40 rounded-full blur-3xl" style={{ background: color, opacity: 0.45 }} />
+            <div className="relative flex items-center gap-4 p-5 md:p-8">
+              <Avatar src={team.logo} name={(team.name || '').replace(/^Team\s+/i, '')} color={team.color} size={88} className="ring-2 ring-white/60" />
               <div className="min-w-0">
-                <h1 className="m-0 truncate">{team.name}</h1>
-                <div className="text-sm text-muted">{team.ownerName && `Manager: ${team.ownerName}`}{team.ownerName && team.captainName && ' · '}{team.captainName && `Captain: ${team.captainName}`}</div>
-                {spend != null && <div className="mt-1 text-sm text-muted">Auction spend: <span className="tabular-nums">{money(spend)}</span></div>}
+                <h1 className="m-0 break-words font-display text-4xl font-bold uppercase leading-none tracking-wide drop-shadow md:text-6xl">{team.name}</h1>
+                <div className="mt-1.5 text-sm text-white/85">{team.ownerName && `Manager: ${team.ownerName}`}{team.ownerName && team.captainName && ' · '}{team.captainName && `Captain: ${team.captainName}`}</div>
+                {spend != null && <div className="mt-1 text-sm text-white/85">Auction spend: <span className="tabular-nums">{money(spend)}</span></div>}
               </div>
             </div>
           </div>
 
           {row && (
-            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-              {[['Rank', row.rank], ['Played', row.P], ['W-D-L', `${row.W}-${row.D}-${row.L}`], ['Goals', `${row.GF}:${row.GA}`], ['Points', row.Pts]].map(([l, v]) => <Stat key={l} label={l} value={v} />)}
+            <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
+              {[['Rank', row.rank], ['Played', row.P], ['W-D-L', `${row.W}-${row.D}-${row.L}`], ['Goals', `${row.GF}:${row.GA}`], ['Points', row.Pts]].map(([l, v]) => (
+                <div key={l} className="grad-card rounded-2xl p-4 shadow-card">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-muted">{l}</div>
+                  <div className="text-grad mt-1 font-display text-4xl font-bold tabular-nums">{v ?? '—'}</div>
+                </div>
+              ))}
             </div>
           )}
 
           <SectionTitle>{`Squad (${squad.length})`}</SectionTitle>
           {!squad.length ? <Empty>No players yet.</Empty> : cats.map((c) => (
-            <div key={c} className="mb-3">
-              <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted">Category {c}</div>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            <div key={c} className="mb-5">
+              <div className="mb-2 flex items-center gap-2 font-display text-sm font-semibold uppercase tracking-widest text-muted"><CatChip code={c} />Category {c}</div>
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
                 {squad.filter((p) => (p.category || '—') === c).map((p) => (
-                  <PlayerCard key={p._id} player={p} href={`/t/${tid}/players/${p._id}`} price={price(p.price)}
-                    right={p.captain ? <span className="rounded-md bg-accent/20 px-1.5 text-xs font-bold text-warning">C</span> : null} />
+                  <div key={p._id} className="relative">
+                    <PlayerTile player={p} href={`/t/${tid}/players/${p._id}`} price={price(p.price)} />
+                    {p.captain && <span className="absolute bottom-2 right-2 rounded-md bg-warning px-1.5 text-xs font-extrabold text-black">C</span>}
+                  </div>
                 ))}
               </div>
             </div>

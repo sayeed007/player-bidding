@@ -2,46 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ---------- design tokens (space-separated RGB so Tailwind alpha works) ---------- */
+/* ---------- MATCH NIGHT theme: one dark neon theme everywhere (space-separated RGB so Tailwind alpha works) ---------- */
 :root {
-  --bg: 246 247 249; --surface: 255 255 255; --surface2: 240 242 245; --line: 226 230 236;
-  --fg: 15 23 42; --muted: 100 116 139;
-  --primary: 5 150 105; --primary-fg: 255 255 255;
-  --accent: 245 158 11; --success: 22 163 74; --danger: 220 38 38; --warning: 217 119 6;
+  color-scheme: dark;
+  --bg: 6 8 20; --surface: 15 19 40; --surface2: 25 30 62; --line: 46 54 104;
+  --fg: 240 243 255; --muted: 152 162 208;
+  --primary: 163 255 71; --primary-fg: 10 14 2;      /* volt lime */
+  --accent: 255 46 151;                               /* hot magenta */
+  --cyan: 34 227 255; --violet: 139 92 246;
+  --success: 52 211 153; --danger: 255 77 109; --warning: 255 184 46;
   /* legacy aliases used by older pages / ops-* classes */
   --card: rgb(var(--surface)); --lineC: rgb(var(--line)); --mut: rgb(var(--muted));
   --pri: rgb(var(--primary)); --ok: rgb(var(--success)); --bad: rgb(var(--danger)); --warn: rgb(var(--warning));
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: 9 13 22; --surface: 20 27 41; --surface2: 28 37 55; --line: 40 52 74;
-    --fg: 232 237 245; --muted: 148 163 184;
-    --primary: 16 185 129; --primary-fg: 4 24 17;
-    --accent: 251 191 36;
-  }
-}
 
 @layer base {
   html { -webkit-text-size-adjust: 100%; }
-  body { @apply bg-bg font-sans text-fg antialiased; padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+  body { @apply bg-bg font-sans text-fg antialiased; padding-bottom: calc(64px + env(safe-area-inset-bottom));
+    background-image:
+      radial-gradient(900px 480px at 85% -10%, rgb(var(--violet) / .28), transparent 60%),
+      radial-gradient(700px 420px at -10% 0%, rgb(var(--cyan) / .16), transparent 55%),
+      radial-gradient(800px 500px at 50% 115%, rgb(var(--accent) / .16), transparent 60%);
+    background-attachment: fixed; }
   @media (min-width: 768px) { body { padding-bottom: 0; } }
   a { @apply text-primary no-underline; }
   a:hover { @apply underline; }
-  h1 { @apply font-display text-2xl font-bold tracking-tight md:text-3xl; margin: .3em 0; }
-  h2 { @apply font-display text-lg font-semibold tracking-tight; margin: 1.2em 0 .5em; }
+  h1 { @apply font-display text-3xl font-bold uppercase tracking-wide md:text-4xl; margin: .3em 0; }
+  h2 { @apply font-display text-xl font-semibold uppercase tracking-wide; margin: 1.2em 0 .5em; }
   :focus-visible { @apply outline outline-2 outline-offset-2 outline-primary; }
   /* bare form controls get the kit look so un-migrated pages still look right; 16px stops iOS zoom */
-  input, select, textarea { @apply min-h-[44px] w-full rounded-xl border border-line bg-surface px-3.5 py-2 text-base text-fg placeholder:text-muted; }
+  input, select, textarea { @apply min-h-[44px] w-full rounded-xl border border-line bg-surface2/70 px-3.5 py-2 text-base text-fg placeholder:text-muted; }
+  input:focus, select:focus, textarea:focus { @apply border-primary outline-none; box-shadow: 0 0 0 3px rgb(var(--primary) / .25); }
   input[type='checkbox'], input[type='radio'] { @apply min-h-0 w-auto; }
   input[type='file'] { @apply min-h-0 border-dashed py-2 text-sm; }
-  button { @apply inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-[15px] font-semibold text-primary-fg transition active:scale-[.98]; }
+  button { @apply inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-[15px] font-bold text-primary-fg transition active:scale-[.98]; box-shadow: 0 0 18px -4px rgb(var(--primary) / .65); }
+  button.sec { box-shadow: none; }
   button.sec { @apply border border-line bg-surface text-fg hover:bg-surface2; }
   button.bad { @apply bg-danger text-white; }
   button.ok { @apply bg-success text-white; }
   button:disabled { @apply cursor-not-allowed opacity-45; }
   table { @apply w-full border-collapse; }
   th, td { @apply border-b border-line px-3 py-2.5 text-left text-sm; }
-  th { @apply whitespace-nowrap text-xs font-semibold uppercase tracking-wide text-muted; }
+  th { @apply whitespace-nowrap text-xs font-semibold uppercase tracking-wider text-muted; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 }
 
@@ -110,3 +112,19 @@ body > main:has(.admin-workspace) { max-width: 90rem; }
 .ops-count{font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800;font-variant-numeric:tabular-nums}
 .ops-tile{display:block;color:inherit;text-align:center}.ops-tile:hover{text-decoration:none;border-color:var(--pri)}
 .ops-tile img.ops-photo{width:96px;height:96px;border-radius:50%;object-fit:cover;background:rgb(var(--line))}
+
+/* ---------- match-night utilities ---------- */
+.grad-card { background: linear-gradient(145deg, rgb(var(--surface2)) 0%, rgb(var(--surface)) 60%, rgb(var(--violet) / .22) 140%); border: 1px solid rgb(var(--line)); }
+.grad-hero { background: linear-gradient(130deg, rgb(var(--violet)) 0%, rgb(var(--accent)) 55%, rgb(var(--cyan)) 120%); }
+.grad-volt { background: linear-gradient(135deg, rgb(var(--primary)), rgb(var(--cyan))); color: rgb(var(--primary-fg)); }
+.grad-border { position: relative; border: 1px solid transparent; background: linear-gradient(rgb(var(--surface)), rgb(var(--surface))) padding-box, linear-gradient(135deg, rgb(var(--primary)), rgb(var(--cyan)), rgb(var(--accent))) border-box; }
+.glow-primary { box-shadow: 0 0 28px -6px rgb(var(--primary) / .7); }
+.glow-accent { box-shadow: 0 0 28px -6px rgb(var(--accent) / .7); }
+.glow-cyan { box-shadow: 0 0 28px -6px rgb(var(--cyan) / .7); }
+.neon-text { color: rgb(var(--primary)); text-shadow: 0 0 18px rgb(var(--primary) / .55); }
+.neon-text-accent { color: rgb(var(--accent)); text-shadow: 0 0 18px rgb(var(--accent) / .55); }
+.text-grad { background: linear-gradient(90deg, rgb(var(--primary)), rgb(var(--cyan))); -webkit-background-clip: text; background-clip: text; color: transparent; }
+@keyframes pulse-neon { 0%,100% { box-shadow: 0 0 0 0 rgb(var(--accent) / .55); } 50% { box-shadow: 0 0 0 10px rgb(var(--accent) / 0); } }
+.pulse-live { animation: pulse-neon 1.6s infinite; }
+@keyframes pop { 0% { transform: scale(.92); opacity: .4; } 60% { transform: scale(1.04); } 100% { transform: scale(1); opacity: 1; } }
+.pop { animation: pop .35s ease-out; }

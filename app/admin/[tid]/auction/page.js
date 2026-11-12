@@ -35,18 +35,18 @@ export default function ControlRoom({ params }) {
   const cats = d.config.categories.filter((c) => c.active !== false);
   const ask = (title, text, label, run) => { setMore(false); setConfirm({ title, text, label, run }); };
   const B = ({ a, label, data, off, ok, icon, variant, className }) => (
-    <Button size="lg" variant={variant} icon={icon} className={className} disabled={off} onClick={() => act(a, data, ok || label)}>{label}</Button>
+    <Button size="lg" variant={variant} icon={icon} className={clsx(variant === 'success' && !off && 'grad-volt glow-primary', variant === 'secondary' && 'border-cyan/40', className)} disabled={off} onClick={() => act(a, data, ok || label)}>{label}</Button>
   );
   const canSell = live && l && l.leaderTeamId && !l.held;
 
   return (
     <main className="pb-8">
       {/* sticky status header */}
-      <div className="sticky top-16 z-30 -mx-4 border-b border-line bg-surface/95 px-4 py-2 backdrop-blur md:-mx-6 md:px-6">
+      <div className="sticky top-16 z-30 -mx-4 border-b border-primary/30 bg-bg/90 px-4 py-2 backdrop-blur-md md:-mx-6 md:px-6">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="m-0 flex-1 truncate text-lg md:text-xl">Control room</h1>
           <StatusBadge status={d.status} />{l?.held && <StatusBadge status="hold" />}
-          {l?.open && <span className={clsx('font-display text-lg font-bold tabular-nums', left < 10000 && live ? 'text-danger' : 'text-fg')}>{Math.floor((left || 0) / 1000)}s</span>}
+          {l?.open && <span className={clsx('font-display text-lg font-bold tabular-nums', left < 10000 && live ? 'neon-text-accent' : 'neon-text')}>{Math.floor((left || 0) / 1000)}s</span>}
         </div>
         <div className="mt-1.5"><ProgressBar d={d} /></div>
       </div>
@@ -65,7 +65,7 @@ export default function ControlRoom({ params }) {
       )}
 
       {d.status !== 'idle' && <>
-        <LotHero d={d} />
+        <LotHero d={d} split />
 
         <Card title="Lot controls">
           <div className="grid gap-3">

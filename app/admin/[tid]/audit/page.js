@@ -28,7 +28,7 @@ export default function Audit({ params }) {
             {rows.map((a, i) => (
               <li key={a._id ?? i} className="border-b border-line px-4 py-3 last:border-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                  <span className="rounded-md bg-primary/10 px-2 py-0.5 font-mono text-xs font-semibold text-primary">{a.action}</span>
+                  <span className="rounded-md bg-primary/15 px-2 py-0.5 font-mono text-xs font-semibold text-primary ring-1 ring-primary/30">{a.action}</span>
                   <span className="text-sm font-medium">{a.userName || 'system'}</span>
                   <span className="ml-auto text-xs text-muted tabular-nums">{dt(a.at)}</span>
                 </div>

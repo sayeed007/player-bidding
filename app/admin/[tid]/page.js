@@ -10,7 +10,7 @@ const TOP = new Set(['pending', 'pendingTeams', 'pendingResults']);
 
 export default function Dashboard({ params }) {
   const { tid } = use(params);
-  const { data, error } = useApi(`/api/t/${tid}/dashboard`, { poll: 10000 });
+  const { data, error, reload } = useApi(`/api/t/${tid}/dashboard`, { poll: 10000 });
   const { data: t, error: tournamentError, reload: reloadTournament } = useApi(`/api/t/${tid}`);
   const { data: readiness, error: readinessError } = useApi(`/api/t/${tid}/readiness`);
   const cur = t ? statusIndex(t.status) : -1;
@@ -27,15 +27,20 @@ export default function Dashboard({ params }) {
 
       <Card title="Tournament progress" right={t && <Link href={`/admin/${tid}/settings`} className="text-sm">Manage setup</Link>}>
         {tournamentError ? <Empty>Could not load tournament progress.</Empty> : !t ? <Skeleton className="h-12" /> : (
+          <>
+          <div className="mb-3 h-2 overflow-hidden rounded-full bg-surface2" role="progressbar" aria-label="Tournament progress" aria-valuemin={0} aria-valuemax={STATUS_ORDER.length} aria-valuenow={cur + 1}>
+            <div className="h-full rounded-full grad-volt glow-primary transition-all" style={{ width: `${((cur + 1) / STATUS_ORDER.length) * 100}%` }} />
+          </div>
           <ol className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
             {STATUS_ORDER.map((s, i) => (
               <li key={s} aria-current={i === cur ? 'step' : undefined} className="flex shrink-0 items-center gap-2">
-                <span className={`inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${i === cur ? 'bg-primary text-primary-fg' : i < cur ? 'bg-success/15 text-success' : 'bg-surface2 text-muted'}`}>
+                <span className={`inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium ${i === cur ? 'grad-volt glow-primary font-bold' : i < cur ? 'bg-success/15 text-success' : 'bg-surface2 text-muted'}`}>
                   {i < cur ? <CheckCircle2 size={14} aria-hidden /> : <span className="tabular-nums">{i + 1}</span>}{statusLabel(s)}
                 </span>
               </li>
             ))}
           </ol>
+          </>
         )}
       </Card>
 
@@ -70,7 +75,7 @@ export default function Dashboard({ params }) {
 
       <Card title="Tournament snapshot">
         {!data ? error ? <Empty>Could not load tournament summary.</Empty> : <div className="grid grid-cols-2 gap-3 md:grid-cols-4">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-24" />)}</div>
-          : <div className="grid grid-cols-2 gap-3 md:grid-cols-4">{data.widgets.filter((w) => !TOP.has(w.key)).map((w) => <Stat key={w.key} label={w.label} value={w.value} href={w.href} />)}</div>}
+          : <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">{data.widgets.filter((w) => !TOP.has(w.key)).map((w) => <Stat key={w.key} label={w.label} value={w.value} href={w.href} />)}</div>}
       </Card>
 
       <Card title="Upcoming fixtures" right={<Link href={`/admin/${tid}/fixtures`} className="text-sm">All fixtures</Link>}>

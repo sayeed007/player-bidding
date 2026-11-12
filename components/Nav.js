@@ -31,17 +31,17 @@ export default function Nav() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-line bg-bg/75 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 md:px-6">
-          <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold text-fg no-underline hover:no-underline">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-fg"><Goal size={18} aria-hidden /></span>
+          <Link href="/" className="flex items-center gap-2 font-display text-xl font-bold uppercase tracking-wider text-fg no-underline hover:no-underline">
+            <span className="grid h-8 w-8 place-items-center rounded-lg grad-volt glow-primary"><Goal size={18} aria-hidden /></span>
             <span className="hidden sm:inline">NFTMS</span>
           </Link>
           <nav aria-label="Main" className="hidden flex-1 items-center gap-1 md:flex">
             {all.map((i) => (
               <Link key={i.href} href={i.href}
                 className={clsx('rounded-lg px-3 py-2 text-sm font-medium no-underline hover:no-underline',
-                  active(i) ? 'bg-primary/10 text-primary' : 'text-muted hover:bg-surface2 hover:text-fg')}>{i.label}</Link>
+                  active(i) ? 'bg-primary/10 text-primary shadow-[inset_0_-2px_0_rgb(var(--primary))]' : 'text-muted hover:bg-surface2 hover:text-fg')}>{i.label}</Link>
             ))}
           </nav>
           <span className="flex-1 md:hidden" />
@@ -56,7 +56,7 @@ export default function Nav() {
         </div>
       </header>
 
-      <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
+      <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
         <ul className="mx-auto flex max-w-lg items-stretch justify-around">
           {all.filter((i) => !i.desktopOnly).map((i) => {
             const on = active(i), Icon = i.icon;
@@ -65,7 +65,7 @@ export default function Nav() {
                 <Link href={i.href} aria-current={on ? 'page' : undefined}
                   className={clsx('flex h-16 flex-col items-center justify-center gap-0.5 text-[11px] font-medium no-underline hover:no-underline',
                     on ? 'text-primary' : 'text-muted')}>
-                  <span className={clsx('grid h-7 w-12 place-items-center rounded-full transition', on && 'bg-primary/10', i.hot && !on && 'text-accent')}>
+                  <span className={clsx('grid h-7 w-12 place-items-center rounded-full transition', on && 'bg-primary/15 shadow-[0_0_16px_-2px_rgb(var(--primary)/.7)]', i.hot && !on && 'text-accent')}>
                     <Icon size={20} aria-hidden />
                   </span>{i.label}
                 </Link>

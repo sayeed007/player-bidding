@@ -39,7 +39,7 @@ export default function Fixtures({ params }) {
             {!list.length && <div className="mt-3"><Empty>No fixtures published yet.</Empty></div>}
             {[...groups].map(([k, ms]) => (
               <section key={k} className="mt-5">
-                <h2 className="mb-2 mt-0 flex items-center justify-between gap-3 text-sm font-semibold uppercase tracking-wide text-muted"><span>{k}</span><span className="rounded-full bg-surface2 px-2.5 py-1 text-xs tabular-nums">{ms.length}</span></h2>
+                <h2 className="mb-3 mt-0 flex items-center justify-between gap-3 font-display text-base tracking-widest text-fg"><span className="flex items-center gap-2"><span aria-hidden className="h-4 w-1.5 rounded-full bg-accent shadow-[0_0_12px_rgb(var(--accent))]" />{k}</span><span className="rounded-full bg-surface2 px-2.5 py-1 font-sans text-xs tabular-nums text-muted">{ms.length}</span></h2>
                 <div className="grid gap-3 md:grid-cols-2">{ms.map((m) => <MatchCard key={m._id} tid={tid} m={m} teams={tm} />)}</div>
               </section>
             ))}

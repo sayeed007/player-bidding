@@ -10,7 +10,7 @@ const STEPS = [{ value: 0, label: '1 Format' }, { value: 1, label: '2 Schedule' 
 
 const Chip = ({ on, onClick, children }) => (
   <button type="button" aria-pressed={on} onClick={onClick}
-    className={cx('!min-h-[44px] !rounded-full !px-4 border', on ? '!bg-primary !text-primary-fg border-primary' : '!bg-surface !text-fg border-line')}>{children}</button>
+    className={cx('!min-h-[44px] !rounded-full !px-4 border', on ? '!bg-primary !text-primary-fg border-primary glow-primary' : '!bg-surface !text-fg border-line')}>{children}</button>
 );
 
 /** Editable list of chips (venues, dates, time slots). */
@@ -39,16 +39,16 @@ function ChipList({ items, onChange, type = 'text', placeholder }) {
 
 function MatchCard({ m, bad, right }) {
   return (
-    <li className={cx('rounded-xl border bg-surface p-3', bad ? 'border-warning bg-warning/10' : 'border-line')}>
+    <li className={cx('grad-card rounded-2xl p-3', bad && '!border-accent glow-accent')}>
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-        <span className="font-medium uppercase">{m.stage}{m.group ? ` ${m.group}` : ''}</span>
-        {bad && <AlertTriangle size={14} className="text-warning" aria-label="Has a problem" />}
+        <span className="rounded-md bg-violet/20 px-2 py-0.5 font-display font-semibold uppercase tracking-wider text-violet">{m.stage}{m.group ? ` ${m.group}` : ''}</span>
+        {bad && <AlertTriangle size={14} className="text-accent" aria-label="Has a problem" />}
         <span className="ml-auto">{right}</span>
       </div>
-      <div className="mt-1 font-semibold">{m.homeName} <span className="font-normal text-muted">vs</span> {m.awayName}</div>
+      <div className="mt-2 font-display text-lg font-semibold uppercase leading-tight tracking-wide">{m.homeName} <span className="neon-text-accent px-1 text-sm">vs</span> {m.awayName}</div>
       <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-muted">
-        <span className="inline-flex items-center gap-1 tabular-nums"><CalendarDays size={13} aria-hidden />{m.start ? dt(m.start) : 'Unscheduled'}</span>
-        {m.venue && <span className="inline-flex items-center gap-1"><MapPin size={13} aria-hidden />{m.venue}</span>}
+        <span className="inline-flex items-center gap-1 tabular-nums"><CalendarDays size={13} aria-hidden className="text-cyan" />{m.start ? dt(m.start) : 'Unscheduled'}</span>
+        {m.venue && <span className="inline-flex items-center gap-1"><MapPin size={13} aria-hidden className="text-cyan" />{m.venue}</span>}
       </div>
     </li>
   );
@@ -64,7 +64,7 @@ function Rounds({ matches, renderRight, badIds }) {
     <div className="flex flex-col gap-4">
       {groups.map(([k, ms]) => (
         <section key={k}>
-          <h3 className="mb-2 mt-0 text-sm font-semibold text-muted">{k}</h3>
+          <h3 className="mb-2 mt-0 font-display text-sm font-semibold uppercase tracking-widest text-cyan">{k}</h3>
           <ul className="m-0 grid list-none grid-cols-1 gap-2 p-0 md:grid-cols-2">
             {ms.map((m, i) => <MatchCard key={m._id || i} m={m} bad={badIds?.has(m.key) || badIds?.has(m._id)} right={renderRight?.(m)} />)}
           </ul>
@@ -108,6 +108,11 @@ export default function Fixtures({ params }) {
     <div className={cx('flex flex-col', prev && 'pb-24')}>
       <PageHeader title="Fixtures" subtitle="Generate, review and publish the match schedule" />
       <Msg {...msg} />
+      <ol aria-label="Progress" className="m-0 mb-3 flex list-none gap-2 p-0">
+        {STEPS.map((s) => (
+          <li key={s.value} className={cx('h-1.5 flex-1 rounded-full transition', s.value <= step ? 'grad-volt glow-primary' : 'bg-surface2')} aria-current={s.value === step ? 'step' : undefined}><span className="sr-only">{s.label}</span></li>
+        ))}
+      </ol>
       <Card title="Generate fixtures" right={<Segmented value={step} onChange={setStep} options={STEPS} />}>
         <div className="flex flex-col gap-4">
           {step === 0 && <>
@@ -148,8 +153,8 @@ export default function Fixtures({ params }) {
       {prev && (
         <Card title={`Preview (${prev.count} matches)`} right={<Badge color={viol.length ? 'amber' : 'green'}>{viol.length ? `${viol.length} problem(s)` : 'No problems'}</Badge>}>
           {viol.length > 0 && (
-            <ul role="alert" className="mb-4 flex list-none flex-col gap-1 rounded-xl border border-warning/40 bg-warning/10 p-3 text-sm text-warning">
-              {viol.map((v, i) => <li key={i} className="flex gap-2"><AlertTriangle size={16} className="mt-0.5 shrink-0" aria-hidden />{v.message}</li>)}
+            <ul role="alert" className="mb-4 flex list-none flex-col gap-1 rounded-xl border border-accent/50 bg-accent/10 p-3 text-sm text-warning shadow-[0_0_24px_-8px_rgb(var(--accent)/.7)]">
+              {viol.map((v, i) => <li key={i} className="flex gap-2"><AlertTriangle size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />{v.message}</li>)}
             </ul>
           )}
           <Rounds matches={prev.matches} badIds={badIds} />
@@ -163,7 +168,7 @@ export default function Fixtures({ params }) {
             <span className="inline-flex flex-wrap items-center justify-end gap-2">
               <StatusBadge status={m.status} />{!m.published && <Badge>draft</Badge>}
               {m.resultState === 'final'
-                ? <span className="font-semibold tabular-nums text-fg">{m.score.home}-{m.score.away}</span>
+                ? <span className="font-display text-xl font-bold tabular-nums text-fg">{m.score.home}-{m.score.away}</span>
                 : <Button size="md" variant="secondary" onClick={() => setEd({ _id: m._id, name: `${m.homeName} vs ${m.awayName}`, start: m.start || '', venue: m.venue || '', referee: m.referee || '', reason: '', force: false, status: m.status })}>Edit</Button>}
             </span>
           )} />
@@ -171,7 +176,7 @@ export default function Fixtures({ params }) {
       </Card>
 
       {prev && (
-        <div className="fixed inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom))] z-30 border-t border-line bg-surface/95 p-3 backdrop-blur md:bottom-0">
+        <div className="fixed inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom))] z-30 border-t border-primary/40 bg-bg/90 p-3 shadow-[0_-8px_32px_-8px_rgb(var(--primary)/.45)] backdrop-blur md:bottom-0">
           <div className="mx-auto flex max-w-6xl gap-2">
             <Button variant="secondary" onClick={() => setPrev(null)}>Discard</Button>
             {viol.length > 0 && <Button variant="danger" className="flex-1" onClick={() => confirm('Save despite problems?') && save(true)}>Save anyway</Button>}

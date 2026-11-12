@@ -66,10 +66,10 @@ export default function Admin() {
       {!list ? tournamentsError ? <Empty>Could not load tournaments.</Empty> : <Skeleton className="h-32" /> : !list.length ? <Empty>No tournaments yet.</Empty> : (
         <ul className="grid gap-3 md:grid-cols-2">
           {list.map((t) => (
-            <li key={t._id} className="rounded-2xl border border-line bg-surface p-4 shadow-card">
+            <li key={t._id} className="grad-card rounded-2xl p-4 shadow-card transition hover:border-primary/60 hover:shadow-[0_0_24px_-8px_rgb(var(--primary)/.8)]">
               <Link href={`/admin/${t._id}`} className="flex items-center gap-3 text-fg no-underline hover:no-underline">
                 <span className="min-w-0 flex-1">
-                  <span className="block break-words font-display text-lg font-semibold">{t.name}</span>
+                  <span className="block break-words font-display text-xl font-semibold uppercase tracking-wide">{t.name}</span>
                   <span className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted">{t.code} · {t.season}<StatusBadge status={t.status} /><Badge>{t.visibility}</Badge></span>
                 </span>
                 <ChevronRight size={20} className="text-muted" aria-hidden />

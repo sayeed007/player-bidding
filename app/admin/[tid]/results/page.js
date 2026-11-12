@@ -3,7 +3,7 @@ import { use, useState } from 'react';
 import { ArrowLeft, ArrowLeftRight, CircleDot, Footprints, Square, Target, Trash2, Undo2 } from 'lucide-react';
 import { call, useApi } from '@/lib/client';
 import { Badge, Button, Card, Empty, Field, Loading, Msg, PageHeader, Segmented, Sheet, StatusBadge, cx, dt, useFlash } from '@/components/ui';
-import { PlayerCard, TeamBadge } from '@/components/cards';
+import { PlayerCard, PlayerTile, TeamBadge, PlayerPhoto } from '@/components/cards';
 
 const LIVE = ['upcoming', 'live', 'half_time', 'completed', 'forfeited'];
 const TABS = [{ value: 'upcoming', label: 'Upcoming' }, { value: 'live', label: 'Live' }, { value: 'toFinalize', label: 'Needs approval' }, { value: 'final', label: 'Completed' }];
@@ -12,13 +12,13 @@ const FILTERS = {
   toFinalize: (m) => ['completed', 'forfeited'].includes(m.status) && m.resultState !== 'final', final: (m) => m.resultState === 'final',
 };
 const QUICK = [
-  { type: 'goal', label: 'Goal', icon: Target, tone: 'bg-success text-white' },
-  { type: 'assist', label: 'Assist', icon: Footprints },
-  { type: 'yellow', label: 'Yellow', icon: Square, tone: 'bg-amber-400 text-black', fill: true },
-  { type: 'red', label: 'Red', icon: Square, tone: 'bg-danger text-white', fill: true },
-  { type: 'sub', label: 'Sub', icon: ArrowLeftRight },
-  { type: 'own_goal', label: 'Own goal', icon: Undo2 },
-  { type: 'penalty_goal', label: 'Penalty', icon: CircleDot },
+  { type: 'goal', label: 'Goal', icon: Target, tone: 'grad-volt glow-primary' },
+  { type: 'assist', label: 'Assist', icon: Footprints, tone: '!bg-cyan/15 !text-cyan border border-cyan/60 glow-cyan' },
+  { type: 'yellow', label: 'Yellow', icon: Square, tone: '!bg-amber-400 !text-black', fill: true },
+  { type: 'red', label: 'Red', icon: Square, tone: '!bg-danger !text-white glow-accent', fill: true },
+  { type: 'sub', label: 'Sub', icon: ArrowLeftRight, tone: '!bg-violet/20 !text-violet border border-violet/60' },
+  { type: 'own_goal', label: 'Own goal', icon: Undo2, tone: '!bg-accent/15 !text-accent border border-accent/60' },
+  { type: 'penalty_goal', label: 'Penalty', icon: CircleDot, tone: '!bg-success/15 !text-success border border-success/60' },
 ];
 const LABEL = Object.fromEntries(QUICK.map((q) => [q.type, q.label]));
 const score = (m) => (m.resultState !== 'open' || m.events.length ? `${m.score.home}-${m.score.away}` : 'vs');
@@ -50,11 +50,11 @@ export default function Results({ params }) {
           {matches.map((m) => (
             <li key={m._id}>
               <button disabled={!m.homeTeamId || !m.awayTeamId} onClick={() => setMid(m._id)}
-                className="!flex !h-auto w-full !flex-col !items-stretch !justify-start gap-2 !rounded-2xl border border-line !bg-surface !p-3 !text-left !font-normal !text-fg">
+                className={cx('grad-card !flex !h-auto w-full !flex-col !items-stretch !justify-start gap-2 !rounded-2xl !p-3 !text-left !font-normal !text-fg', m.status === 'live' && '!border-accent glow-accent')}>
                 <span className="flex items-center gap-2 text-xs text-muted"><span>{m.label}</span><span className="ml-auto"><StatusBadge status={m.status} /></span></span>
                 <span className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
                   <TeamBadge team={{ name: m.homeName }} />
-                  <span className="font-display text-xl font-bold tabular-nums">{score(m)}</span>
+                  <span className="neon-text font-display text-2xl font-bold tabular-nums">{score(m)}</span>
                   <TeamBadge team={{ name: m.awayName }} className="justify-end" />
                 </span>
                 <span className="text-xs tabular-nums text-muted">{dt(m.start)}{m.venue ? ` · ${m.venue}` : ''}</span>
@@ -101,13 +101,15 @@ function MatchPanel({ base, mid, flash, onChange, close }) {
   const secondKey = sheet?.type === 'sub' ? 'inPlayerId' : 'assistPlayerId';
   const stepName = !sheet ? '' : !sheet.playerId ? 'player' : needsSecond && !sheet.second ? 'second' : 'details';
   const pickRows = (list, onPick, skip) => (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
       {skip}
-      {list.map((p) => (
-        <button key={p._id} onClick={() => onPick(p._id)} className="!block !h-auto w-full !rounded-xl !bg-transparent !p-0 text-left !font-normal">
-          <PlayerCard player={p} team={{ name: p.side || teamOf(m, p.teamId).name }} />
-        </button>
-      ))}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {list.map((p) => (
+          <button key={p._id} onClick={() => onPick(p._id)} aria-label={p.name} className="!block !h-auto w-full !rounded-2xl !bg-transparent !p-0 text-left !font-normal !shadow-none">
+            <PlayerTile player={p} team={{ name: p.side || teamOf(m, p.teamId).name }} />
+          </button>
+        ))}
+      </div>
     </div>
   );
   const sheetTitle = !sheet ? '' : stepName === 'player' ? `${LABEL[sheet.type]}: who?` : stepName === 'second' ? (sheet.type === 'sub' ? 'Who comes on?' : 'Assist (optional)') : `Confirm ${LABEL[sheet.type].toLowerCase()}`;
@@ -116,15 +118,18 @@ function MatchPanel({ base, mid, flash, onChange, close }) {
     <div className={cx('flex flex-col', !final && 'pb-24')}>
       <button onClick={close} className="sec !min-h-[44px] self-start"><ArrowLeft size={18} aria-hidden />All matches</button>
 
-      <section className="my-3 rounded-2xl border border-line bg-surface p-4 shadow-card">
-        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-muted">
+      <section className="grad-hero glow-accent my-3 overflow-hidden rounded-3xl p-4 text-white">
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-white/85">
           <span>{m.label} · {dt(m.start)} · {m.venue || 'no venue'}</span>
-          <span className="ml-auto flex gap-1"><StatusBadge status={m.status} /><StatusBadge status={m.resultState} /></span>
+          <span className="ml-auto flex items-center gap-1">
+            {['live', 'half_time'].includes(m.status) && <span className="pulse-live inline-flex items-center gap-1.5 rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider"><span className="h-2 w-2 rounded-full bg-white" aria-hidden />Live</span>}
+            <StatusBadge status={m.status} /><StatusBadge status={m.resultState} />
+          </span>
         </div>
-        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
-          <div className="flex min-w-0 flex-col items-center gap-1 text-center"><TeamBadge team={{ name: m.homeName }} size={44} className="!flex-col" nameClass="text-sm" /></div>
-          <div className="font-display text-3xl font-extrabold sm:text-5xl tabular-nums md:text-6xl" aria-label={`Score ${m.score.home} to ${m.score.away}`}>{m.score.home}<span className="px-1 text-muted">-</span>{m.score.away}</div>
-          <div className="flex min-w-0 flex-col items-center gap-1 text-center"><TeamBadge team={{ name: m.awayName }} size={44} className="!flex-col" nameClass="text-sm" /></div>
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 rounded-2xl bg-black/35 px-2 py-4 backdrop-blur">
+          <div className="flex min-w-0 flex-col items-center gap-1 text-center"><TeamBadge team={{ name: m.homeName }} size={56} className="!flex-col" nameClass="font-display text-sm uppercase tracking-wide" /></div>
+          <div className="font-display text-6xl font-extrabold tabular-nums leading-none drop-shadow-[0_0_18px_rgba(255,255,255,.45)] sm:text-7xl md:text-8xl" aria-label={`Score ${m.score.home} to ${m.score.away}`}>{m.score.home}<span className="px-1.5 text-white/50">:</span>{m.score.away}</div>
+          <div className="flex min-w-0 flex-col items-center gap-1 text-center"><TeamBadge team={{ name: m.awayName }} size={56} className="!flex-col" nameClass="font-display text-sm uppercase tracking-wide" /></div>
         </div>
       </section>
 
@@ -150,7 +155,7 @@ function MatchPanel({ base, mid, flash, onChange, close }) {
           <div className="flex flex-wrap gap-2">
             {LIVE.map((s) => (
               <button key={s} disabled={m.status === s} aria-pressed={m.status === s} onClick={() => run(() => call(u, { status: s }, 'PATCH'), `Status: ${s}`)}
-                className={cx('!min-h-[44px] border capitalize', m.status === s ? '!bg-primary !text-primary-fg border-primary !opacity-100' : '!bg-surface !text-fg border-line')}>{s.replace('_', ' ')}</button>
+                className={cx('!min-h-[44px] border capitalize', m.status === s ? '!bg-primary !text-primary-fg border-primary glow-primary !opacity-100' : '!bg-surface !text-fg border-line')}>{s.replace('_', ' ')}</button>
             ))}
           </div>
         </Card>
@@ -160,8 +165,8 @@ function MatchPanel({ base, mid, flash, onChange, close }) {
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-7">
           {QUICK.map((q) => (
             <button key={q.type} onClick={() => open(q.type)}
-              className={cx('!min-h-[64px] !flex-col !gap-1 !rounded-xl !text-sm', q.tone || '!bg-surface2 !text-fg')}>
-              <q.icon size={20} aria-hidden fill={q.fill ? 'currentColor' : 'none'} />{q.label}
+              className={cx('!min-h-[76px] !flex-col !gap-1 !rounded-2xl !font-display !text-sm !uppercase !tracking-wide', q.tone || '!bg-surface2 !text-fg')}>
+              <q.icon size={26} aria-hidden fill={q.fill ? 'currentColor' : 'none'} />{q.label}
             </button>
           ))}
         </div>
@@ -171,8 +176,8 @@ function MatchPanel({ base, mid, flash, onChange, close }) {
         {!m.events.length ? <Empty>No events yet.</Empty> : (
           <ul className="m-0 flex list-none flex-col gap-2 p-0">
             {m.events.map((e) => (
-              <li key={e.id} className="flex items-center gap-3 rounded-xl border border-line p-3">
-                <span className="w-12 shrink-0 font-display font-bold tabular-nums">{e.minute}&apos;<span className="block text-xs font-normal text-muted">{e.period}</span></span>
+              <li key={e.id} className="grad-card flex items-center gap-3 rounded-xl p-3">
+                <span className="w-14 shrink-0 rounded-lg bg-primary/15 py-1 text-center font-display text-lg font-bold tabular-nums text-primary">{e.minute}&apos;<span className="block font-sans text-[10px] font-normal text-muted">{e.period}</span></span>
                 <span className="min-w-0 flex-1 text-sm">
                   <Badge color={['red', 'own_goal'].includes(e.type) ? 'red' : e.type === 'yellow' ? 'amber' : ['goal', 'penalty_goal'].includes(e.type) ? 'green' : 'neutral'}>{LABEL[e.type] || e.type}</Badge>
                   <span className="mt-1 block truncate font-semibold">{e.playerName}</span>
@@ -209,10 +214,10 @@ function MatchPanel({ base, mid, flash, onChange, close }) {
       )}
 
       {!final && (
-        <div className="fixed inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom))] z-30 border-t border-line bg-surface/95 p-3 backdrop-blur md:bottom-0">
+        <div className="fixed inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom))] z-30 border-t border-primary/40 bg-bg/90 p-3 shadow-[0_-8px_32px_-8px_rgb(var(--primary)/.45)] backdrop-blur md:bottom-0">
           <div className="mx-auto flex max-w-6xl gap-2">
             <Button variant="secondary" className="flex-1" disabled={m.resultState !== 'open'} onClick={() => run(() => call(`${u}/submit`, {}), 'Submitted')}>Submit result</Button>
-            <Button variant="success" className="flex-1" onClick={() => confirm('Finalize? Standings and stats update immediately.') && run(() => call(`${u}/finalize`, { score: m.status === 'forfeited' ? fscore : undefined, winnerTeamId: winner || undefined, potmPlayerId: potm || undefined }), 'Finalized')}>Finalize</Button>
+            <Button variant="success" className="grad-volt glow-primary flex-1" onClick={() => confirm('Finalize? Standings and stats update immediately.') && run(() => call(`${u}/finalize`, { score: m.status === 'forfeited' ? fscore : undefined, winnerTeamId: winner || undefined, potmPlayerId: potm || undefined }), 'Finalized')}>Finalize</Button>
           </div>
         </div>
       )}
@@ -229,7 +234,7 @@ function MatchPanel({ base, mid, flash, onChange, close }) {
               <Field label="Minute"><input type="number" inputMode="numeric" autoFocus value={sheet.minute} onChange={(e) => setSheet({ ...sheet, minute: e.target.value })} /></Field>
               <Field label="Period"><select value={sheet.period} onChange={(e) => setSheet({ ...sheet, period: e.target.value })}>{['1H', '2H', 'ET', 'PEN'].map((p) => <option key={p}>{p}</option>)}</select></Field>
             </div>
-            <Button size="lg" onClick={submitEvent}>Add {LABEL[sheet.type].toLowerCase()}</Button>
+            <Button size="lg" className="glow-primary" onClick={submitEvent}>Add {LABEL[sheet.type].toLowerCase()}</Button>
           </div>
         )}
       </Sheet>
@@ -251,9 +256,11 @@ function Awards({ base, flash }) {
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         {AWARDS.map(([type, label]) => {
           const cur = data.awards.find((a) => a.type === type), sug = data.suggestions?.[type];
+          const wp = (stats?.players || []).find((p) => String(p.playerId) === String(cur?.playerId));
           return (
-            <Card key={type} title={label} className="!my-0">
+            <Card key={type} title={label} className="!my-0 grad-border">
               <div className="flex flex-col gap-3">
+                {wp && <PlayerPhoto player={wp} size="xl" className="mx-auto max-w-[220px]"><div className="absolute inset-x-0 bottom-0 p-3 font-display text-lg font-semibold uppercase leading-tight tracking-wide">{wp.name}<div className="font-sans text-xs font-normal normal-case text-white/80">{wp.teamName}</div></div></PlayerPhoto>}
                 <select aria-label={`${label} winner`} value={cur?.playerId || ''} onChange={(e) => put({ type, playerId: e.target.value || null, note: note[type] }, 'Saved')}>
                   <option value="">- none -</option>
                   {(stats?.players || []).map((p) => <option key={p.playerId} value={p.playerId}>{p.name} ({p.teamName})</option>)}

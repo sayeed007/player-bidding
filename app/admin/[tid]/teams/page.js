@@ -51,22 +51,21 @@ export default function Teams({ params }) {
             {teams.map((x) => {
               const pct = x.budget ? Math.min(100, Math.round(((x.spent || 0) / x.budget) * 100)) : 0;
               return (
-                <li key={x._id} className="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
-                  <div className="h-1.5" style={{ background: x.color }} />
-                  <div className="p-4">
-                    <div className="flex items-center gap-3">
-                      <Avatar src={x.logo} name={x.name.replace(/^Team\s+/i, '')} size={52} color={x.color} />
-                      <div className="min-w-0 flex-1">
-                        <h2 className="m-0 break-words text-base font-semibold">{x.name}</h2>
-                        <p className="break-words text-sm text-muted">Owner {x.ownerName}{x.captainName ? ` · Capt. ${x.captainName}` : ''}</p>
-                      </div>
-                      <StatusBadge status={x.status} />
+                <li key={x._id} className="grad-card overflow-hidden rounded-2xl shadow-card">
+                  <div className="flex items-center gap-3 p-4" style={{ background: `linear-gradient(135deg, ${x.color || '#2563eb'}, rgb(var(--bg)) 130%)` }}>
+                    <Avatar src={x.logo} name={x.name.replace(/^Team\s+/i, '')} size={64} color={x.color} className="ring-2 ring-white/60" />
+                    <div className="min-w-0 flex-1 text-white">
+                      <h2 className="m-0 break-words font-display text-2xl font-bold drop-shadow">{x.name}</h2>
+                      <p className="break-words text-sm text-white/80">Owner {x.ownerName}{x.captainName ? ` · Capt. ${x.captainName}` : ''}</p>
                     </div>
+                    <StatusBadge status={x.status} />
+                  </div>
+                  <div className="p-4">
                     {(x.contact?.phone || x.contact?.email) && <p className="mt-2 flex items-center gap-1.5 truncate text-sm text-muted"><Phone size={14} aria-hidden />{x.contact?.phone || x.contact?.email}</p>}
                     {x.status === 'approved' && (
                       <div className="mt-3">
-                        <div className="flex justify-between text-xs text-muted"><span>Spent <b className="tabular-nums text-fg">{money(x.spent)}</b> / {money(x.budget)}</span><span className="tabular-nums">{x.count || 0} players</span></div>
-                        <div className="mt-1 h-2 overflow-hidden rounded-full bg-surface2" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Budget spent"><div className="h-full bg-primary" style={{ width: `${pct}%` }} /></div>
+                        <div className="flex justify-between text-xs text-muted"><span>Spent <b className="font-display text-base tabular-nums text-fg">{money(x.spent)}</b> / {money(x.budget)}</span><span className="tabular-nums">{x.count || 0} players</span></div>
+                        <div className="mt-1 h-2 overflow-hidden rounded-full bg-surface2" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Budget spent"><div className="grad-volt glow-primary h-full" style={{ width: `${pct}%` }} /></div>
                       </div>
                     )}
                     <div className="mt-3 flex flex-wrap gap-2">

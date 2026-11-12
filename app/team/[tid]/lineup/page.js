@@ -4,7 +4,7 @@ import { use, useState } from 'react';
 import { Check, ArrowLeft, CalendarDays, MapPin } from 'lucide-react';
 import { call, useApi, useMe } from '@/lib/client';
 import { Button, Card, Empty, Loading, Msg, PageHeader, cx, dt, useFlash } from '@/components/ui';
-import { PlayerCard } from '@/components/cards';
+import { PlayerTile } from '@/components/cards';
 
 export default function Lineup({ params }) {
   const { tid } = use(params);
@@ -36,27 +36,27 @@ function Editor({ tid, m, teamId, reload }) {
   const toggle = (id) => { const s = new Set(sel); s.has(id) ? s.delete(id) : s.add(id); setSel(s); };
   const save = () => flash(async () => { await call(`/api/t/${tid}/matches/${m._id}/lineup`, { teamId, players: [...sel] }, 'PUT'); reload(); }, 'Lineup saved');
   return (
-    <Card title={`${m.homeName} vs ${m.awayName}`} right={<span className="text-sm tabular-nums text-muted">{m.lineups?.[side]?.length || 0} picked</span>}>
+    <Card title={`${m.homeName} vs ${m.awayName}`} right={<span className="rounded-full bg-primary/15 px-3 py-1 font-display text-sm font-semibold tabular-nums text-primary">{m.lineups?.[side]?.length || 0} picked</span>}>
       <div className="mb-3 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted"><span className="inline-flex items-center gap-1.5 tabular-nums"><CalendarDays size={15} aria-hidden />{dt(m.start)}</span>{m.venue && <span className="inline-flex items-center gap-1.5"><MapPin size={15} aria-hidden />{m.venue}</span>}</div>
       <Msg {...msg} />
       {!sq ? <Button onClick={open} className="w-full sm:w-auto">Pick lineup</Button> : (
         <>
-          <p className="mb-3 rounded-xl bg-surface2 px-3 py-2 text-sm text-muted">Select players to include in this match lineup.</p>
-          <ul className="m-0 grid list-none grid-cols-1 gap-2 p-0 md:grid-cols-2">
+          <p className="mb-3 rounded-xl border border-line bg-surface2/60 px-3 py-2 text-sm text-muted">Select players to include in this match lineup.</p>
+          <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 md:grid-cols-4">
             {sq.map((p) => {
               const on = sel.has(String(p._id));
               return (
                 <li key={p._id}>
-                  <label className="block cursor-pointer">
+                  <label className="relative block cursor-pointer">
                     <input type="checkbox" className="peer sr-only" checked={on} onChange={() => toggle(String(p._id))} />
-                    <PlayerCard player={p} className={cx('peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-primary', on && '!border-primary bg-primary/10')}
-                      right={<span aria-hidden className={cx('grid h-6 w-6 place-items-center rounded-md border', on ? 'border-primary bg-primary text-primary-fg' : 'border-line')}>{on && <Check size={16} />}</span>} />
+                    <PlayerTile player={p} className={cx('border-2 transition peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-primary', on ? 'border-primary glow-primary' : 'border-transparent opacity-80')} />
+                    <span aria-hidden className={cx('pointer-events-none absolute bottom-2 right-2 grid h-8 w-8 place-items-center rounded-full border-2 transition', on ? 'pop border-primary bg-primary text-primary-fg glow-primary' : 'border-white/50 bg-black/40')}>{on && <Check size={18} strokeWidth={3} />}</span>
                   </label>
                 </li>
               );
             })}
           </ul>
-          <div className="sticky bottom-[calc(64px+env(safe-area-inset-bottom))] z-20 -mx-4 mt-3 border-t border-line bg-surface/95 p-3 backdrop-blur md:bottom-0 md:mx-0 md:rounded-xl md:border">
+          <div className="sticky bottom-[calc(64px+env(safe-area-inset-bottom))] z-20 -mx-4 mt-3 border-t border-primary/40 bg-bg/90 p-3 shadow-[0_-8px_32px_-8px_rgb(var(--primary)/.45)] backdrop-blur md:bottom-0 md:mx-0 md:rounded-xl md:border">
             <Button className="w-full" onClick={save}>Save lineup ({sel.size} selected)</Button>
           </div>
         </>

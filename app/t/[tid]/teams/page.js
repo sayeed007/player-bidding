@@ -22,18 +22,18 @@ export default function Teams({ params }) {
               const max = t.maxSquad ?? t.squadMax ?? t.squadLimit;
               return (
                 <Link key={t._id} href={`/t/${tid}/teams/${t._id}`}
-                  aria-label={`View ${t.name} squad`} className="group overflow-hidden rounded-2xl border border-line bg-surface text-fg no-underline shadow-card transition hover:border-primary/50 hover:no-underline">
-                  <div className="h-1.5" style={{ background: t.color || 'rgb(var(--primary))' }} />
+                  aria-label={`View ${t.name} squad`} className="group overflow-hidden rounded-2xl border border-line text-fg no-underline shadow-card transition hover:-translate-y-0.5 hover:border-primary/60 hover:no-underline"
+                  style={{ background: `linear-gradient(135deg, ${t.color || 'rgb(var(--violet))'} -40%, rgb(var(--surface2)) 55%, rgb(var(--surface)) 100%)` }}>
                   <div className="p-4">
-                    <TeamBadge team={t} size={48} nameClass="font-display text-lg font-bold" />
-                    {t.captainName && <div className="mt-2 text-sm text-muted">Captain: {t.captainName}</div>}
+                    <TeamBadge team={t} size={64} nameClass="!overflow-visible !whitespace-normal break-words font-display text-2xl font-bold uppercase tracking-wide" className="items-center" />
+                    {t.captainName && <div className="mt-2 text-sm text-white/80">Captain: {t.captainName}</div>}
                     {size != null && (
                       <div className="mt-3">
                         <div className="flex justify-between text-xs text-muted"><span>Squad</span><span className="tabular-nums">{size}{max ? ` / ${max}` : ''}</span></div>
-                        {max > 0 && <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface2"><div className="h-full rounded-full bg-primary" style={{ width: `${Math.min(100, (size / max) * 100)}%` }} /></div>}
+                        {max > 0 && <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-black/40"><div className="h-full rounded-full bg-primary shadow-[0_0_10px_rgb(var(--primary))]" style={{ width: `${Math.min(100, (size / max) * 100)}%` }} /></div>}
                       </div>
                     )}
-                    <div className="mt-3 flex min-h-10 items-center justify-between border-t border-line pt-2 text-sm font-semibold text-primary">
+                    <div className="mt-3 flex min-h-10 items-center justify-between border-t border-white/10 pt-2 text-sm font-semibold text-primary">
                       <span>View squad</span><span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
                     </div>
                   </div>
