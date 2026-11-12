@@ -16,9 +16,10 @@ export default function Player({ params }) {
       const p = d.player || d, team = teams.find((t) => String(t._id) === String(p.teamId));
       const c = catOf(p.category);
       return (
-        <div className="pb-4">
-          <PlayerPhoto player={p} size="xl" className="!rounded-3xl md:!aspect-[16/9]">
-            <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
+        <div className="pb-4 md:grid md:grid-cols-[minmax(320px,440px)_1fr] md:items-start md:gap-10">
+          {/* true portrait ratio on every screen: never a wide crop */}
+          <PlayerPhoto player={p} size="xl" className="!rounded-3xl md:sticky md:top-20 md:!aspect-[4/5]">
+            <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2 md:hidden">
               <CatChip code={p.category || '—'} className="!px-3 !py-1 !text-base" />
               {p.status && <StatusBadge status={p.status} />}
             </div>
@@ -28,8 +29,8 @@ export default function Player({ params }) {
                 <div className="neon-text font-display text-2xl font-bold tabular-nums">{price(p.price)}</div>
               </div>
             )}
-            <div className="absolute inset-x-0 bottom-0 p-4 md:p-6">
-              <h1 className="m-0 break-words font-display text-5xl font-bold uppercase leading-none tracking-wide drop-shadow-lg md:text-7xl">{p.name}</h1>
+            <div className="absolute inset-x-0 bottom-0 p-4 md:hidden">
+              <h1 className="m-0 break-words font-display text-5xl font-bold uppercase leading-none tracking-wide drop-shadow-lg">{p.name}</h1>
               <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-white/90">
                 <span className="rounded-full bg-white/15 px-3 py-1 font-semibold uppercase tracking-wider backdrop-blur">{p.position || 'No position'}</span>
                 {team
@@ -38,9 +39,21 @@ export default function Player({ params }) {
               </div>
             </div>
           </PlayerPhoto>
+          <div className="min-w-0">
+            <div className="hidden md:block">
+              <h1 className="m-0 break-words font-display text-6xl font-bold uppercase leading-none tracking-wide">{p.name}</h1>
+              <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+                <CatChip code={p.category || '—'} className="!px-3 !py-1 !text-base" />
+                <span className="rounded-full bg-white/10 px-3 py-1 font-semibold uppercase tracking-wider">{p.position || 'No position'}</span>
+                {p.status && <StatusBadge status={p.status} />}
+                {team
+                  ? <Link href={`/t/${tid}/teams/${team._id}`} className="inline-flex min-h-[44px] items-center rounded-full bg-black/40 px-4 font-semibold text-white hover:no-underline" style={{ boxShadow: `0 0 0 2px ${team.color || c.from}` }}>{team.name}<span aria-hidden className="ml-2">→</span></Link>
+                  : <span className="text-muted">No team yet</span>}
+              </div>
+            </div>
           <SectionTitle>Statistics</SectionTitle>
           {stats ? (
-            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {[['Played', stats.P], ['Goals', stats.goals], ['Assists', stats.assists], ['Clean sheets', stats.cleanSheets], ['Yellow', stats.yellow], ['Red', stats.red]].map(([l, v]) => (
                 <div key={l} className="grad-card rounded-2xl p-4 shadow-card">
                   <div className="text-xs font-semibold uppercase tracking-wider text-muted">{l}</div>
@@ -49,6 +62,7 @@ export default function Player({ params }) {
               ))}
             </div>
           ) : <Empty>No match statistics yet.</Empty>}
+          </div>
         </div>
       );
     }}</Load>

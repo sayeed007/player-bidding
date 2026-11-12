@@ -1,5 +1,5 @@
 'use client';
-import { use, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { useApi } from '@/lib/client';
 import { Button, Card, Empty, PageHeader } from '@/components/ui';
@@ -8,7 +8,20 @@ import clsx from 'clsx';
 import { price } from '../ops';
 import { arr, byId, Load, FILTER_SELECT } from '../ops';
 
-const PAGE = 24;
+const PAGE = 30;
+
+/** Calls onVisible when it scrolls within 600px of the viewport (infinite scroll). Remount via key to re-arm. */
+function Sentinel({ onVisible }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && onVisible(), { rootMargin: '600px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [onVisible]);
+  return <div ref={ref} aria-hidden className="h-px" />;
+}
 
 export default function Players({ params }) {
   const { tid } = use(params);
@@ -57,13 +70,15 @@ export default function Players({ params }) {
               </div>
             </Card>
             {!rows.length ? <Empty>No players match.</Empty> : (
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-5">
                 {rows.slice(0, shown).map((p) => (
                   <PlayerTile key={p._id} player={p} team={tm[String(p.teamId)]} price={price(p.price)} href={`/t/${tid}/players/${p._id}`} />
                 ))}
               </div>
             )}
-            {rows.length > shown && <div className="mt-4 flex justify-center"><Button variant="secondary" onClick={() => setShown(shown + PAGE)}>Load more ({rows.length - shown})</Button></div>}
+            {rows.length > shown
+              ? <div role="status" className="mt-6 flex justify-center text-sm text-muted"><Sentinel key={shown} onVisible={() => setShown((n) => n + PAGE)} />Loading more…</div>
+              : rows.length > PAGE && <p className="mt-6 text-center text-sm text-muted">All {rows.length} players shown</p>}
           </>
         );
       }}</Load>

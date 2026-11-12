@@ -5,6 +5,32 @@
 
 This is the route inventory and polish ledger for the mobile-first app-wide UI/UX pass.
 
+## Review ledger (revalidated 2026-11-12, after the "Match Night" restyle)
+
+Inventory check: **28 page routes and 45 API handlers on disk — both match this document exactly.**
+
+"Polished" below means *restyled*. It is **not** QA. The ledger records what was actually looked at in a browser (390px phone width unless noted, local build, Next 15.5.29). Everything not marked ✅ is restyled but **unreviewed**, so treat it as unverified until we go through it.
+
+| Route | Browser-checked | Finding |
+|---|---|---|
+| `/t/[tid]` | ✅ | Hero, live banner, scoreboard cards look right. |
+| `/t/[tid]/players` | ✅ | Photo tiles good; names wrap. |
+| `/t/[tid]/players/[pid]` | ✅ | Large portrait hero OK; empty-stats state OK. |
+| `/t/[tid]/auction` | ✅ | Big portrait + bid OK. |
+| `/t/[tid]/auction/live` | ✅ (1280×720) | Projector layout good at 16:9. Not checked at 1920×1080 or on a phone. |
+| `/t/[tid]/standings` | ✅ | Fits 390px; leader highlighted. |
+| `/t/[tid]/stats` | ✅ | Tabs + empty states OK. |
+| `/team/[tid]` | ✅ | Budget hero, CTA, quota bars OK. |
+| `/team/[tid]/auction` | ✅ | Photo is huge, bid bar sticky. **Open issue:** at ~660px viewport height the bar covers the top of the bid card (fine at 844px). |
+| `/` `/login` `/me` `/t/[tid]/register` | ❌ | Unreviewed. |
+| `/t/[tid]/fixtures` `/teams` `/teams/[teamId]` | ❌ | Unreviewed. |
+| `/team/[tid]/lineup` | ❌ | Unreviewed. |
+| All 11 `/admin/**` pages | ❌ | Unreviewed. Admin has its own chrome (hand-polished); check it after the theme change. |
+
+Known data/UX issues found while reviewing:
+- Auction progress "6/60 sold" counts the 6 pre-assigned captains as sold.
+- Some tournament status text can look wrong right after a reseed (status is real DB state, not a bug).
+
 ## Page routes and polish status
 
 The remaining page families have now received a mobile-first UX pass using the existing design tokens and components. **Polished** means the route received page-specific layout, control, feedback, or navigation improvements while preserving its existing actions and API behavior. It does not mean the route has completed live browser QA.
@@ -157,13 +183,14 @@ These handlers support page behavior and are not visual pages. They are listed s
 
 ## Remaining UI/UX work
 
-The goal is polish across every page. Suggested sequence:
+All 28 pages are restyled; the remaining work is **verification and fixes, route by route**. Suggested order (highest event-day risk first):
 
-1. Finish the admin module pages: players, teams, auction, fixtures, results, settings, reports, announcements, audit, then global `/admin`.
-2. Polish the public tournament and spectator pages, including the auction projector as its own full-screen experience.
-3. Polish team owner/captain pages and the account pages (`/login`, `/me`).
-4. Revisit each page at phone and desktop widths, including loading, empty, error, permission, validation, and success states.
+1. Auction path: `/admin/[tid]/auction` (auctioneer console), then re-check `/team/[tid]/auction` on a real phone and the projector at 1920×1080.
+2. Results path: `/admin/[tid]/results` (scorekeeper), `/admin/[tid]/fixtures`, `/team/[tid]/lineup`.
+3. Setup path: `/admin/[tid]/players` (bulk photos), `/admin/[tid]/teams`, `/admin/[tid]/settings`, `/admin/[tid]/page`, `/admin`.
+4. Public remainder: `/`, `/t/[tid]/fixtures`, `/teams`, `/teams/[teamId]`, `/register`.
+5. Account: `/login`, `/me`; then reports, announcements and audit.
 
-This sequence is a work list, not a claim that those pages are currently complete. Keep existing routes, API behavior, permissions, and business rules while improving the UI.
+For each route check phone (390px) and desktop widths, plus loading, empty, error, permission, validation and success states. Keep existing routes, API behavior, permissions and business rules while improving the UI. Record the result in the review ledger above.
 
 

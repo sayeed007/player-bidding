@@ -18,13 +18,14 @@
 
 @layer base {
   html { -webkit-text-size-adjust: 100%; }
-  body { @apply bg-bg font-sans text-fg antialiased; padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  body { @apply bg-bg font-sans text-fg antialiased;
     background-image:
       radial-gradient(900px 480px at 85% -10%, rgb(var(--violet) / .28), transparent 60%),
       radial-gradient(700px 420px at -10% 0%, rgb(var(--cyan) / .16), transparent 55%),
       radial-gradient(800px 500px at 50% 115%, rgb(var(--accent) / .16), transparent 60%);
     background-attachment: fixed; }
-  @media (min-width: 768px) { body { padding-bottom: 0; } }
+  body.has-tabbar { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+  @media (min-width: 768px) { body.has-tabbar { padding-bottom: 0; } }
   a { @apply text-primary no-underline; }
   a:hover { @apply underline; }
   h1 { @apply font-display text-3xl font-bold uppercase tracking-wide md:text-4xl; margin: .3em 0; }

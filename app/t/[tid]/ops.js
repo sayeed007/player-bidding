@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
-import { Avatar, Skeleton, dt } from '@/components/ui';
+import { Avatar, Card, Empty, Skeleton, dt } from '@/components/ui';
 import { PlayerPhoto } from '@/components/cards';
 
 export const arr = (d, k) => (Array.isArray(d) ? d : d?.[k] || []);
@@ -24,7 +24,7 @@ export function Load({ r, children }) {
 export const Logo = ({ src, name = '?', color, sm }) => <Avatar src={src} name={name.replace(/^Team\s+/i, '')} color={color} size={sm ? 28 : 56} />;
 
 export const SectionTitle = ({ children, href, linkText = 'See all' }) => (
-  <div className="mb-3 mt-8 flex items-end justify-between gap-3">
+  <div className="mb-4 mt-12 flex items-end justify-between gap-3">
     <h2 className="m-0 flex items-center gap-2 text-xl"><span aria-hidden className="h-5 w-1.5 rounded-full bg-primary shadow-[0_0_12px_rgb(var(--primary))]" />{children}</h2>
     {href && <Link href={href} className="inline-flex min-h-[44px] items-center text-sm font-semibold">{linkText}<span aria-hidden className="ml-1">→</span></Link>}
   </div>
@@ -129,3 +129,47 @@ export function LeaderHero({ tid, x, pm = {}, unit }) {
 
 export const FILTER_SELECT = 'min-h-[44px] rounded-xl border border-line bg-surface2/70 px-3 text-base';
 export { dt };
+
+/**
+ * Ranked player list card (top scorers, assists, ...). rows: [{playerId,name,photo,teamName,value}].
+ * Shows the top 5, "Show top N" expands to 15. hideTeam drops the team line (team pages).
+ */
+export function LeaderBoard({ tid, title, icon: Icon, unit, rows, pm = {}, empty = 'No data yet.', hideTeam }) {
+  const [all, setAll] = useState(false);
+  const list = rows.slice(0, all ? 15 : 5);
+  return (
+    <Card title={<span className="flex items-center gap-2">{Icon && <Icon size={18} className="text-primary" aria-hidden />}{title}</span>} className="!my-0">
+      {!rows.length ? <Empty>{empty}</Empty> : (
+        <>
+          <ol className="m-0 grid list-none gap-1.5 p-0">
+            {list.map((x, i) => {
+              const first = i === 0;
+              return (
+                <li key={x.playerId}>
+                  <Link href={`/t/${tid}/players/${x.playerId}`}
+                    className={clsx('flex items-center gap-3 rounded-xl px-2.5 py-2 text-fg no-underline hover:no-underline', first ? 'grad-border glow-primary min-h-[76px]' : 'min-h-[60px] hover:bg-surface2')}>
+                    <span className={clsx('w-6 text-center font-display text-xl font-bold tabular-nums', i < 3 ? 'neon-text-accent' : 'text-muted')}>{i + 1}</span>
+                    <Avatar src={x.photo || pm[String(x.playerId)]?.photo} name={x.name} size={first ? 60 : 46} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block break-words font-semibold leading-tight">{x.name}</span>
+                      {!hideTeam && <span className="block break-words text-xs text-muted">{x.teamName}</span>}
+                    </span>
+                    <span className="text-right">
+                      <span className={clsx('block font-display font-bold tabular-nums', first ? 'text-grad text-4xl' : 'text-2xl')}>{x.value}</span>
+                      <span className="block text-[11px] uppercase tracking-wider text-muted">{unit}</span>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ol>
+          {rows.length > 5 && (
+            <button type="button" aria-expanded={all} onClick={() => setAll(!all)} className="sec mt-3 w-full !min-h-[40px] text-sm">
+              {all ? 'Show top 5' : `Show top ${Math.min(15, rows.length)}`}
+            </button>
+          )}
+        </>
+      )}
+    </Card>
+  );
+}

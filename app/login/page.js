@@ -3,13 +3,14 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { LogIn, ArrowLeft } from 'lucide-react';
 import { call } from '@/lib/client';
+import { homeFor } from '@/lib/roles';
 import { Button, Field, Msg, useFlash } from '@/components/ui';
 
 export default function Login() {
   const [f, setF] = useState({ username: '', password: '' });
   const [m, flash] = useFlash();
   const [busy, setBusy] = useState(false);
-  const go = () => { setBusy(true); flash(async () => { await call('/api/auth/login', f); location.href = '/'; }, 'Welcome').finally(() => setBusy(false)); };
+  const go = () => { setBusy(true); flash(async () => { await call('/api/auth/login', f); const { user } = await call('/api/auth/me'); location.href = homeFor(user); }, 'Welcome').finally(() => setBusy(false)); };
   return (
     <div className="mx-auto mt-3 max-w-md md:mt-12">
       <Link href="/" className="mb-3 inline-flex min-h-11 items-center gap-2 rounded-xl px-1 text-sm font-medium"><ArrowLeft size={16} aria-hidden />Browse tournaments</Link>

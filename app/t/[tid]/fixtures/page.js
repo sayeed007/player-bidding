@@ -14,7 +14,9 @@ export default function Fixtures({ params }) {
       <PageHeader title="Fixtures & results" subtitle="Published schedule and completed scores" />
       <Load r={r}>{(d) => {
         const all = [...arr(d, 'matches')].sort((a, b) => String(a.start).localeCompare(String(b.start)));
-        const names = new Map(all.flatMap((m) => [[String(m.homeTeamId), m.homeName], [String(m.awayTeamId), m.awayName]]));
+        // Options come from the teams list, so the filter works before any fixture exists; match names fill in anything missing.
+        const names = new Map(teams.map((t) => [String(t._id), t.name]));
+        for (const m of all) for (const [id, n] of [[m.homeTeamId, m.homeName], [m.awayTeamId, m.awayName]]) if (id && n && !names.has(String(id))) names.set(String(id), n);
         const list = all.filter((m) => !team || [m.homeTeamId, m.awayTeamId].map(String).includes(team));
         const groups = new Map();
         for (const m of list) {
@@ -28,7 +30,7 @@ export default function Fixtures({ params }) {
               <label className="grid flex-1 gap-1 text-xs font-medium text-muted">Show matches for
                 <select className={FILTER_SELECT} value={team} onChange={(e) => setTeam(e.target.value)} aria-label="Filter by team">
                   <option value="">All teams</option>
-                  {[...names].filter(([, n]) => n).map(([id, n]) => <option key={id} value={id}>{n}</option>)}
+                  {[...names].filter(([, n]) => n).sort((x, y) => x[1].localeCompare(y[1])).map(([id, n]) => <option key={id} value={id}>{n}</option>)}
                 </select>
               </label>
               <div className="mt-2 flex min-h-10 items-center justify-between gap-3 text-sm sm:mt-5 sm:w-40">

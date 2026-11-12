@@ -1,15 +1,17 @@
 'use client';
 import { use } from 'react';
+import { Goal, HandHelping, Star } from 'lucide-react';
 import { useApi } from '@/lib/client';
 import { Avatar, Empty, money } from '@/components/ui';
 import { PlayerTile, CatChip } from '@/components/cards';
-import { arr, byId, Load, MatchCard, SectionTitle, price } from '../../ops';
+import { arr, byId, LeaderBoard, Load, MatchCard, SectionTitle, price } from '../../ops';
 
 export default function Team({ params }) {
   const { tid, teamId } = use(params);
   const r = useApi(`/api/t/${tid}/teams/${teamId}`);
   const mt = useApi(`/api/t/${tid}/matches`).data;
   const st = useApi(`/api/t/${tid}/standings`).data;
+  const ps = arr(useApi(`/api/t/${tid}/stats`).data, 'players').filter((x) => String(x.teamId) === String(teamId));
   const teams = arr(useApi(`/api/t/${tid}/teams`).data, 'teams');
   return (
     <Load r={r}>{(d) => {
@@ -19,6 +21,8 @@ export default function Team({ params }) {
       const spend = squad.some((p) => p.price != null) ? squad.reduce((s, p) => s + (p.price || 0), 0) : null;
       const cats = [...new Set(squad.map((p) => p.category || '—'))].sort();
       const color = team.color || 'rgb(var(--primary))';
+      // this team's leaders, from the same derived stats as the tournament page; value > 0 only
+      const top = (k) => ps.filter((x) => x[k] > 0).sort((a, b) => b[k] - a[k] || a.name.localeCompare(b.name)).map((x) => ({ ...x, value: x[k] }));
       return (
         <div className="pb-4">
           <div className="relative overflow-hidden rounded-3xl border border-line shadow-card" style={{ background: `linear-gradient(135deg, ${color} -20%, rgb(var(--surface2)) 70%, rgb(var(--surface)) 100%)` }}>
@@ -43,6 +47,13 @@ export default function Team({ params }) {
               ))}
             </div>
           )}
+
+          <SectionTitle>Team leaders</SectionTitle>
+          <div className="grid gap-4 md:grid-cols-3 md:gap-6">
+            <LeaderBoard tid={tid} hideTeam title="Top scorers" icon={Goal} unit="Goals" rows={top('goals')} empty="No goals yet." />
+            <LeaderBoard tid={tid} hideTeam title="Top assists" icon={HandHelping} unit="Assists" rows={top('assists')} empty="No assists yet." />
+            <LeaderBoard tid={tid} hideTeam title="Player of the match" icon={Star} unit="Awards" rows={top('potm')} empty="No match awards yet." />
+          </div>
 
           <SectionTitle>{`Squad (${squad.length})`}</SectionTitle>
           {!squad.length ? <Empty>No players yet.</Empty> : cats.map((c) => (

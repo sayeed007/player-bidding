@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export const GET = api(async () => {
   const u = await me();
-  const q = u?.role === 'super' ? {} : { $or: [{ visibility: { $ne: 'private' } }, ...(u?.tournamentId ? [{ _id: u.tournamentId }] : [])] };
+  const q = u?.role === 'super' ? {} : { $or: [{ visibility: { $ne: 'private' }, status: { $ne: 'draft' } }, ...(u?.tournamentId ? [{ _id: u.tournamentId }] : [])] } // drafts are unpublished setup: only super and its own staff see them;
   return { tournaments: await (await col('tournaments')).find(q).sort({ createdAt: -1 }).toArray() };
 });
 
