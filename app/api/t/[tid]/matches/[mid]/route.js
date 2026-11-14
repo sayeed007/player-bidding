@@ -10,7 +10,7 @@ export const GET = api(async (req, { params }) => {
   const m = await getMatch(tid, mid);
   const staff = await isStaff(tid);
   if (!m.published && !staff) fail(404, 'match not found');
-  const sq = [...(await squad(tid, m)).values()].map((p) => ({ _id: p._id, name: p.name, position: p.position, teamId: p.teamId, photo: p.photo }));
+  const sq = [...(await squad(tid, m)).values()].map((p) => ({ _id: p._id, name: p.name, position: p.position, category: p.category, captain: p.captain, teamId: p.teamId, photo: p.photo }));
   const side = (t) => sq.filter((p) => String(p.teamId) === String(t));
   return { match: (await decorate(tid, [m], staff))[0], squads: { home: side(m.homeTeamId), away: side(m.awayTeamId) } };
 });

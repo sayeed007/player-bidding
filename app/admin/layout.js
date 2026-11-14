@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import clsx from 'clsx';
-import { Goal, LayoutDashboard, Settings, Users, Shield, Gavel, CalendarDays, ClipboardList, FileBarChart, Megaphone, ScrollText, MoreHorizontal, LogOut, Trophy, Globe, Tv } from 'lucide-react';
+import { LayoutDashboard, Settings, Users, Shield, Gavel, CalendarDays, ClipboardList, FileBarChart, Megaphone, ScrollText, MoreHorizontal, LogOut, Trophy, Globe, Tv } from 'lucide-react';
 import { call, useApi } from '@/lib/client';
 import { isStaff } from '@/lib/roles';
 import { Sheet, Skeleton } from '@/components/ui';
@@ -68,8 +68,8 @@ export default function AdminLayout({ children }) {
       <header className="sticky top-0 z-40 -mx-4 border-b border-line bg-bg/80 px-4 py-2 backdrop-blur md:-mx-6 md:px-6">
         <div className="mx-auto flex min-h-11 max-w-[1440px] items-center gap-3">
           <Link href="/admin" className="flex shrink-0 items-center gap-2 font-display font-bold text-fg no-underline hover:no-underline">
-            <span className="grid h-8 w-8 place-items-center rounded-lg grad-volt glow-primary"><Goal size={18} aria-hidden /></span>
-            <span className="hidden font-display uppercase tracking-wider sm:inline">NFTMS <span className="font-sans text-xs font-medium text-accent">ADMIN</span></span>
+            <img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9 shrink-0" />
+            <span className="hidden font-display uppercase tracking-wider sm:inline">Bid<span className="text-grad">Arena</span> <span className="font-sans text-xs font-medium text-accent">ADMIN</span></span>
           </Link>
           <div className="min-w-0 flex-1 border-l border-line pl-3">
             <div className="truncate text-sm font-semibold">{tid ? tournament?.name || 'Tournament workspace' : 'Platform workspace'}</div>

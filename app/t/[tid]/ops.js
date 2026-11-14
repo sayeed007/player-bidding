@@ -39,17 +39,19 @@ export const Live = ({ children = 'LIVE' }) => (
 const when = (d) => (d ? new Date(d).toLocaleString([], { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'TBD');
 
 /** Gradient scoreboard card. teams: optional {id: team} lookup for logos/colours. big = giant numerals (home). */
-export function MatchCard({ tid, m, teams = {}, className, big }) {
+export function MatchCard({ tid, m, teams = {}, className, big, plain }) {
   const live = LIVE.includes(m.status), done = DONE.includes(m.status), shown = live || done;
   const hc = teams[String(m.homeTeamId)]?.color, ac = teams[String(m.awayTeamId)]?.color;
   const side = (id, name) => {
     const t = teams[String(id)] || {};
-    return (
-      <Link href={`/t/${tid}/teams/${id}`} className="flex min-w-0 flex-col items-center gap-1.5 text-center text-fg no-underline hover:no-underline">
+    const inner = (
+      <>
         <Avatar src={t.logo} name={(name || 'TBD').replace(/^Team\s+/i, '')} color={t.color} size={big ? 64 : 48} className="ring-2 ring-white/20" />
         <span className="w-full break-words font-display text-sm font-semibold uppercase leading-tight tracking-wide">{name || 'TBD'}</span>
-      </Link>
+      </>
     );
+    const cls = 'flex min-w-0 flex-col items-center gap-1.5 text-center text-fg no-underline hover:no-underline';
+    return plain ? <div className={cls}>{inner}</div> : <Link href={`/t/${tid}/teams/${id}`} className={cls}>{inner}</Link>;
   };
   return (
     <div className={clsx('grad-card relative overflow-hidden rounded-2xl p-3 shadow-card', big && 'p-4', live && 'glow-accent !border-accent/70', className)}

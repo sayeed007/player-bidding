@@ -69,6 +69,7 @@ export default function Projector({ params }) {
 
       {/* top bar */}
       <header className="relative z-10 flex min-w-0 shrink-0 flex-wrap items-center gap-2 leading-tight sm:gap-4" style={{ fontSize: vm(12, 1.7, 28) }}>
+        <img src="/logo.png" alt="BidArena" className="h-[2.4em] w-auto shrink-0" />
         <b className="neon-text font-display uppercase tracking-[.3em]">Live auction</b>
         <span className={clsx('rounded-full px-3 py-0.5 font-bold uppercase tracking-wider', d.status === 'live' ? 'bg-accent pulse-live' : 'bg-white/15')}>{statusText(d)}</span>
         {error && <span className="text-warning">reconnecting...</span>}

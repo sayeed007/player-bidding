@@ -19,7 +19,9 @@ export const GET = api(async (_req, { params }) => {
   const now = new Date().toISOString();
   const name = Object.fromEntries(teams.map((x) => [String(x._id), x.name]));
   const upcoming = live.filter((m) => m.status !== 'completed' && m.start >= now).sort((a, b) => (a.start < b.start ? -1 : 1)).slice(0, 5)
-    .map((m) => ({ _id: m._id, start: m.start, venue: m.venue, home: name[String(m.homeTeamId)], away: name[String(m.awayTeamId)] }));
+    .map((m) => ({ _id: m._id, start: m.start, venue: m.venue, home: name[String(m.homeTeamId)], away: name[String(m.awayTeamId)],
+      homeTeamId: m.homeTeamId, awayTeamId: m.awayTeamId, homeName: name[String(m.homeTeamId)] || m.homeLabel, awayName: name[String(m.awayTeamId)] || m.awayLabel,
+      stage: m.stage, round: m.round, status: m.status, score: m.score }));
   const w = (key, label, value, href) => ({ key, label, value, href });
   return {
     status: t.status,

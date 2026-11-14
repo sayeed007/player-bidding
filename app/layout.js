@@ -5,7 +5,11 @@ import Nav from '@/components/Nav';
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
 const display = Oswald({ subsets: ['latin'], variable: '--font-display', display: 'swap' });
 
-export const metadata = { title: 'Neural Football Tournament', description: 'Tournament management and live player auction' };
+export const metadata = {
+  title: { default: 'BidArena', template: '%s · BidArena' },
+  applicationName: 'BidArena',
+  description: 'BidArena: live player auctions, fixtures, standings and stats for your football tournament.',
+};
 export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#060814' };
 
 export default function Layout({ children }) {

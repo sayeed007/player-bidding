@@ -25,10 +25,11 @@ export function Button({ variant = 'primary', size = 'md', icon: Icon, className
 export const Input = ({ className, ...p }) => <input {...p} className={className} />;
 export const Select = ({ className, children, ...p }) => <select {...p} className={className}>{children}</select>;
 
-export const Field = ({ label, hint, children, className }) => (
+export const Field = ({ label, hint, error, children, className }) => (
   <label className={clsx('grid gap-1', className)}>
     <span className="text-xs font-medium text-muted">{label}</span>{children}
     {hint && <span className="text-xs text-muted">{hint}</span>}
+    {error && <span role="alert" className="text-xs font-medium text-danger">{error}</span>}
   </label>
 );
 
@@ -75,9 +76,9 @@ export const Empty = ({ children = 'Nothing here yet.' }) => (
 export const Skeleton = ({ className }) => <div aria-hidden="true" className={clsx('animate-pulse rounded-xl bg-surface2', className)} />;
 export const Loading = () => <div role="status" aria-label="Loading" className="grid gap-3"><Skeleton className="h-24" /><Skeleton className="h-40" /></div>;
 
-export function Avatar({ src, name = '', size = 44, color, className }) {
+export function Avatar({ src, name = '', size = 44, color, className, style }) {
   const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
-  const s = { width: size, height: size, fontSize: size * 0.38 };
+  const s = { width: size, height: size, fontSize: size * 0.38, ...style };
   return src
     ? <img src={src} alt={name} loading="lazy" style={s} className={clsx('shrink-0 rounded-full bg-surface2 object-cover object-top', className)} />
     : <span aria-hidden style={{ ...s, background: color || undefined }} className={clsx('inline-grid shrink-0 place-items-center rounded-full bg-surface2 font-bold text-fg', color && 'text-white', className)}>{initials || '?'}</span>;
@@ -97,7 +98,7 @@ export function Segmented({ value, onChange, options, className }) {
 }
 
 /** Bottom sheet on mobile, centered dialog on desktop. */
-export function Sheet({ open, onClose, title, children }) {
+export function Sheet({ open, onClose, title, children, wide }) {
   const dialog = useRef(null), close = useRef(onClose);
   close.current = onClose;
   useEffect(() => {
@@ -124,7 +125,7 @@ export function Sheet({ open, onClose, title, children }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm md:items-center" onClick={onClose}>
       <div ref={dialog} role="dialog" aria-modal="true" aria-label={title} tabIndex={-1} onClick={(e) => e.stopPropagation()}
-        className="grad-border max-h-[90vh] w-full overflow-y-auto rounded-t-2xl p-4 shadow-card md:max-w-lg md:rounded-2xl">
+        className={clsx('grad-border max-h-[90vh] w-full overflow-y-auto rounded-t-2xl p-4 shadow-card md:rounded-2xl', wide ? 'md:max-w-3xl' : 'md:max-w-lg')}>
         <div className="mb-3 flex items-center"><h2 className="m-0 flex-1 text-base font-semibold">{title}</h2>
           <button className="sec !min-h-[36px] !px-2" onClick={onClose} aria-label="Close"><X size={18} /></button></div>
         {children}

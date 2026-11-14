@@ -85,6 +85,7 @@ export default function Settings({ params }) {
       </Section>
 
       <Section title="Basics" hint="Name, format, squad and budget" defaultOpen>
+        {locked && <p className="mb-3 rounded-xl border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning" role="note">The auction has started, so the number of teams, players per team and budget are locked. Everything else can still be edited.</p>}
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Name"><input value={f.name} onChange={set('name')} /></Field>
           <Field label="Code"><input value={f.code} onChange={set('code')} /></Field>
@@ -121,6 +122,7 @@ export default function Settings({ params }) {
       </Section>
 
       <Section title="Categories" hint={`${cats.length} categories · ${problems.length ? `${problems.length} problem${problems.length > 1 ? 's' : ''}` : 'OK'}`}>
+        {locked && <p className="mb-3 rounded-xl border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning" role="note">The auction has started, so category codes, prices, minimums, maximums and the active flag are locked. Names and descriptions can still be edited.</p>}
         <div className="grid gap-3 md:grid-cols-2">
           {cats.map((c, i) => (
             <div key={i} className="rounded-xl border border-line p-3">

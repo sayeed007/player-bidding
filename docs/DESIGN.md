@@ -1,4 +1,4 @@
-# NFTMS – Design contract (read before touching code)
+# BidArena – Design contract (read before touching code)
 
 Stack: Next.js 15 App Router (JS, no TS), MongoDB Atlas (driver `mongodb`), Cloudinary (client-side unsigned upload, `uploadImage()` in `lib/client.js`), deploys on Vercel free tier.
 **No WebSockets / no background workers / no cron.** Live data = client polling (1.5s) of stateless GET endpoints. Timers are `endsAt` timestamps compared with the server clock (`now` returned by the API). Anything "scheduled" is evaluated lazily on read.

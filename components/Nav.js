@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import clsx from 'clsx';
-import { Goal, CalendarDays, Gavel, Trophy, User, Shield, LogOut, BarChart3, Users, UsersRound, Shirt } from 'lucide-react';
+import { CalendarDays, Gavel, Trophy, User, Shield, LogOut, BarChart3, Users, UsersRound, Shirt } from 'lucide-react';
 import { call, useApi } from '@/lib/client';
 import Bell from '@/components/Bell';
 
@@ -44,8 +44,8 @@ export default function Nav() {
       <header className="sticky top-0 z-40 border-b border-line bg-bg/75 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 md:px-6">
           <Link href={tid ? `/t/${tid}` : '/'} className="flex items-center gap-2 font-display text-xl font-bold uppercase tracking-wider text-fg no-underline hover:no-underline">
-            <span className="grid h-8 w-8 place-items-center rounded-lg grad-volt glow-primary"><Goal size={18} aria-hidden /></span>
-            <span className="hidden sm:inline">NFTMS</span>
+            <img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9 shrink-0" />
+            <span className="hidden sm:inline"><span className="font-display text-xl font-bold uppercase tracking-wider">Bid<span className="text-grad">Arena</span></span></span><span className="sr-only sm:hidden">BidArena</span>
           </Link>
           <nav aria-label="Main" className="hidden flex-1 items-center gap-1 md:flex">
             {[...items, ...(who ? [who] : [])].map((i) => (

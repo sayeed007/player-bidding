@@ -1,6 +1,6 @@
 import { api, col, body, need, tour, fail, audit, oid } from '@/lib/server';
 import { categoryProblems } from '@/lib/rules';
-import { pickSettings, dot, statusIndex } from '@/lib/setup';
+import { pickSettings, dot, statusIndex, lockedChanges } from '@/lib/setup';
 import { viewer } from '@/lib/setup-server';
 
 export const dynamic = 'force-dynamic';
@@ -20,7 +20,9 @@ export const PATCH = api(async (req, { params }) => {
   const b = await body(req);
   const { patch, errors } = pickSettings(b);
   const locked = statusIndex(t.status) >= statusIndex('auction_in_progress');
-  if (locked) for (const k of ['categories', 'squadSize', 'teamsCount', 'budget']) if (k in patch) fail(409, `${k} cannot change once the auction has started`);
+  // the form resubmits every field, so only reject values that actually differ from what is stored
+  const moved = locked ? lockedChanges(t, patch) : [];
+  if (moved.length) fail(409, `${moved.join(', ')} cannot change once the auction has started`);
   const next = { ...t, ...patch };
   if ('categories' in patch || 'squadSize' in patch) errors.push(...categoryProblems(next.squadSize, next.categories || []));
   if (patch.teamsCount) {

@@ -15,7 +15,7 @@ export default function Login() {
     <div className="mx-auto mt-3 max-w-md md:mt-12">
       <Link href="/" className="mb-3 inline-flex min-h-11 items-center gap-2 rounded-xl px-1 text-sm font-medium"><ArrowLeft size={16} aria-hidden />Browse tournaments</Link>
       <div className="grad-border glow-primary rounded-2xl p-5 shadow-card sm:p-8">
-        <span className="grid h-12 w-12 place-items-center rounded-xl grad-volt glow-primary"><LogIn size={22} aria-hidden /></span>
+        <img src="/logo.png" alt="BidArena" width={72} height={72} className="h-[72px] w-[72px]" />
         <h1 className="mb-1 mt-3 text-4xl text-grad">Sign in</h1>
         <p className="mb-6 text-base text-muted">Access your tournament, team or player account.</p>
         <form className="grid gap-4" aria-busy={busy} onSubmit={(e) => { e.preventDefault(); go(); }}>

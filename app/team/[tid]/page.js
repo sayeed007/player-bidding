@@ -2,10 +2,11 @@
 import Link from 'next/link';
 import { use } from 'react';
 import clsx from 'clsx';
-import { Gavel, Check, ClipboardList, Bell, CalendarDays, MapPin, ArrowRight } from 'lucide-react';
+import { Gavel, Check, ClipboardList, CalendarDays, ArrowRight } from 'lucide-react';
 import { useApi } from '@/lib/client';
-import { Card, Skeleton, Empty, Badge, Avatar, money, dt } from '@/components/ui';
+import { Card, Skeleton, Empty, Badge, Avatar, money } from '@/components/ui';
 import { PlayerTile, CatChip, catOf } from '@/components/cards';
+import { arr, byId, MatchCard } from '@/app/t/[tid]/ops';
 
 export default function TeamHome({ params }) {
   const { tid } = use(params);
@@ -15,9 +16,9 @@ export default function TeamHome({ params }) {
   const { data: b, error } = useApi(teamId ? `/api/t/${tid}/teams/${teamId}/budget` : null, { poll: 5000 });
   const { data: d } = useApi(teamId ? `/api/t/${tid}/teams/${teamId}` : null, { poll: 5000 });
   const { data: tour } = useApi(teamId ? `/api/t/${tid}` : null, { poll: 15000 });
-  // other modules' endpoints: tolerate errors until they exist
   const { data: m } = useApi(teamId ? `/api/t/${tid}/matches` : null, { poll: 30000 });
-  const { data: n } = useApi(teamId ? `/api/t/${tid}/notifications` : null, { poll: 10000 });
+  const { data: td } = useApi(teamId ? `/api/t/${tid}/teams` : null);
+  const teams = byId(arr(td, 'teams'));
 
   const gate = (x) => <div className="mx-auto mt-10 max-w-sm grad-border rounded-2xl p-5 text-center text-sm shadow-card">{x}</div>;
   if (!meD && !meE) return <Skeleton className="h-40" />;
@@ -37,7 +38,7 @@ export default function TeamHome({ params }) {
       <div className="mb-4 mt-1 flex flex-wrap items-center gap-3">
         <Avatar src={team?.logo} name={(team?.name || '').replace(/^Team\s+/i, '')} size={56} color={team?.color} />
         <div className="min-w-0 flex-1"><p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted">Team workspace</p><h1 className="m-0 break-words text-grad">{team?.name || 'My team'}</h1></div>
-        {me.role === 'captain' && <Link href={`/team/${tid}/lineup`} className="inline-flex min-h-11 items-center justify-center gap-2 grad-card rounded-xl px-3 text-sm font-semibold text-fg no-underline hover:bg-surface2 hover:no-underline"><ClipboardList size={17} aria-hidden />Lineup</Link>}
+        <Link href={`/team/${tid}/lineup`} className="inline-flex min-h-11 items-center justify-center gap-2 grad-card rounded-xl px-3 text-sm font-semibold text-fg no-underline hover:bg-surface2 hover:no-underline"><ClipboardList size={17} aria-hidden />Set lineup</Link>
       </div>
       <nav aria-label="Team shortcuts" className="mb-4 flex flex-wrap gap-2 text-sm">
         <Link href={`/t/${tid}`} className="inline-flex min-h-11 items-center gap-2 grad-card rounded-xl px-3 font-medium">Tournament overview<ArrowRight size={15} aria-hidden /></Link>
@@ -92,26 +93,11 @@ export default function TeamHome({ params }) {
         )}
       </Card>
 
-      <Card title="Upcoming fixtures" right={<Link href={`/t/${tid}/fixtures`} className="inline-flex min-h-11 items-center gap-1 text-sm font-medium">View all<ArrowRight size={15} aria-hidden /></Link>}>
+      <Card title="Upcoming fixtures" right={<span className="flex items-center gap-4"><Link href={`/team/${tid}/lineup`} className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold"><ClipboardList size={15} aria-hidden />Set lineup</Link><Link href={`/t/${tid}/fixtures`} className="inline-flex min-h-11 items-center gap-1 text-sm font-medium">View all<ArrowRight size={15} aria-hidden /></Link></span>}>
         {!fixtures.length ? <Empty>No fixtures published yet.</Empty> : (
-          <ul className="grid gap-2">
-            {fixtures.map((x) => (
-              <li key={x._id} className="rounded-xl border border-line p-3">
-                <p className="font-semibold">{x.homeName} <span className="text-muted">vs</span> {x.awayName}</p>
-                <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-sm text-muted"><span className="flex items-center gap-1"><CalendarDays size={14} aria-hidden />{dt(x.start)}</span>{x.venue && <span className="flex items-center gap-1"><MapPin size={14} aria-hidden />{x.venue}</span>}</p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
-
-      <Card title="Notifications" right={<Bell size={16} className="text-muted" aria-hidden />}>
-        {!(n?.items || []).length ? <Empty>No notifications.</Empty> : (
-          <ul className="divide-y divide-line">
-            {n.items.slice(0, 10).map((x) => (
-              <li key={x._id} className="py-2 first:pt-0 last:pb-0"><p className="font-semibold">{x.title}</p><p className="text-sm">{x.text}</p><p className="text-xs text-muted">{dt(x.at)}</p></li>
-            ))}
-          </ul>
+          <div className="grid gap-3 md:grid-cols-2">
+            {fixtures.map((x) => <MatchCard key={x._id} tid={tid} m={x} teams={teams} />)}
+          </div>
         )}
       </Card>
     </>

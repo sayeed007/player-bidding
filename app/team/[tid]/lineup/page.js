@@ -1,66 +1,64 @@
 'use client';
 import Link from 'next/link';
 import { use, useState } from 'react';
-import { Check, ArrowLeft, CalendarDays, MapPin } from 'lucide-react';
+import clsx from 'clsx';
+import { ArrowLeft, Check } from 'lucide-react';
 import { call, useApi, useMe } from '@/lib/client';
-import { Button, Card, Empty, Loading, Msg, PageHeader, cx, dt, useFlash } from '@/components/ui';
-import { PlayerTile } from '@/components/cards';
+import { Empty, Loading, Msg, PageHeader, useFlash } from '@/components/ui';
+import Builder from './Builder';
+
+const day = (s) => (s ? new Date(s).toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' }) : '');
 
 export default function Lineup({ params }) {
   const { tid } = use(params);
   const me = useMe();
-  const { data, error, reload } = useApi(`/api/t/${tid}/matches`);
-  if (error) return <p role="alert" className="text-danger">{error}</p>;
-  if (!me?.teamId) return <Empty>Log in as a team captain or owner to set a lineup.</Empty>;
-  const mine = (data?.matches || []).filter((m) => [m.homeTeamId, m.awayTeamId].some((t) => String(t) === String(me.teamId))
-    && !['completed', 'forfeited', 'cancelled'].includes(m.status) && m.resultState !== 'final');
-  return (
-    <div className="flex flex-col">
-      <Link href={`/team/${tid}`} className="mb-3 inline-flex min-h-11 items-center gap-2 self-start rounded-xl border border-line bg-surface px-3 text-sm font-medium text-fg no-underline hover:bg-surface2 hover:no-underline"><ArrowLeft size={16} aria-hidden />Team overview</Link>
-      <PageHeader title="Match lineups" subtitle="Choose your starters for each upcoming match" />
-      {!data ? <Loading /> : !mine.length && <Empty>No upcoming published matches for your team.</Empty>}
-      {mine.map((m) => <Editor key={m._id} tid={tid} m={m} teamId={me.teamId} reload={reload} />)}
-    </div>
-  );
-}
-
-function Editor({ tid, m, teamId, reload }) {
-  const [sq, setSq] = useState(null);
-  const [sel, setSel] = useState(null);
+  const list = useApi(`/api/t/${tid}/matches`);
+  const [picked, setPicked] = useState(null);
+  const [busy, setBusy] = useState(false);
   const [msg, flash] = useFlash();
-  const side = String(m.homeTeamId) === String(teamId) ? 'home' : 'away';
-  const open = () => flash(async () => {
-    const r = await call(`/api/t/${tid}/matches/${m._id}`);
-    setSq(r.squads[side]); setSel(new Set((m.lineups?.[side] || []).map(String)));
-  }, 'Loaded');
-  const toggle = (id) => { const s = new Set(sel); s.has(id) ? s.delete(id) : s.add(id); setSel(s); };
-  const save = () => flash(async () => { await call(`/api/t/${tid}/matches/${m._id}/lineup`, { teamId, players: [...sel] }, 'PUT'); reload(); }, 'Lineup saved');
+  const teamId = me?.teamId;
+  const mine = (list.data?.matches || [])
+    .filter((m) => [m.homeTeamId, m.awayTeamId].some((t) => String(t) === String(teamId)) && !['completed', 'forfeited', 'cancelled'].includes(m.status) && m.resultState !== 'final')
+    .sort((a, b) => String(a.start).localeCompare(String(b.start)));
+  const cur = picked && mine.some((m) => m._id === picked) ? picked : mine[0]?._id;
+  const detail = useApi(teamId && cur ? `/api/t/${tid}/matches/${cur}` : null);
+
+  if (list.error) return <p role="alert" className="text-danger">{list.error}</p>;
+  if (!me) return <Loading />;
+  if (!teamId) return <Empty>Log in as a team captain or owner to set a lineup.</Empty>;
+
+  const m = detail.data?.match && detail.data.match._id === cur ? detail.data.match : null;
+  const side = m && String(m.homeTeamId) === String(teamId) ? 'home' : 'away';
+  const save = (payload) => { setBusy(true); flash(() => call(`/api/t/${tid}/matches/${cur}/lineup`, { teamId, ...payload }, 'PUT').then(() => { list.reload(); detail.reload(); }), 'Lineup saved').finally(() => setBusy(false)); };
+
   return (
-    <Card title={`${m.homeName} vs ${m.awayName}`} right={<span className="rounded-full bg-primary/15 px-3 py-1 font-display text-sm font-semibold tabular-nums text-primary">{m.lineups?.[side]?.length || 0} picked</span>}>
-      <div className="mb-3 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted"><span className="inline-flex items-center gap-1.5 tabular-nums"><CalendarDays size={15} aria-hidden />{dt(m.start)}</span>{m.venue && <span className="inline-flex items-center gap-1.5"><MapPin size={15} aria-hidden />{m.venue}</span>}</div>
-      <Msg {...msg} />
-      {!sq ? <Button onClick={open} className="w-full sm:w-auto">Pick lineup</Button> : (
+    <div className="flex flex-col pb-4">
+      <Link href={`/team/${tid}`} className="mb-3 inline-flex min-h-11 items-center gap-2 self-start rounded-xl border border-line bg-surface2/60 px-3 text-sm font-medium text-fg no-underline hover:bg-surface2 hover:no-underline"><ArrowLeft size={16} aria-hidden />Team overview</Link>
+      <PageHeader title="Lineup builder" subtitle="Choose a formation, then drag your players into position" />
+
+      {!list.data ? <Loading /> : !mine.length ? <Empty>No upcoming published matches for your team.</Empty> : (
         <>
-          <p className="mb-3 rounded-xl border border-line bg-surface2/60 px-3 py-2 text-sm text-muted">Select players to include in this match lineup.</p>
-          <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3 md:grid-cols-4">
-            {sq.map((p) => {
-              const on = sel.has(String(p._id));
+          <div role="tablist" aria-label="Upcoming matches" className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:px-0">
+            {mine.map((x) => {
+              const s = String(x.homeTeamId) === String(teamId) ? 'home' : 'away';
+              const opp = s === 'home' ? x.awayName : x.homeName, on = x._id === cur, set = (x.lineups?.[s] || []).length;
               return (
-                <li key={p._id}>
-                  <label className="relative block cursor-pointer">
-                    <input type="checkbox" className="peer sr-only" checked={on} onChange={() => toggle(String(p._id))} />
-                    <PlayerTile player={p} className={cx('border-2 transition peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-primary', on ? 'border-primary glow-primary' : 'border-transparent opacity-80')} />
-                    <span aria-hidden className={cx('pointer-events-none absolute bottom-2 right-2 grid h-8 w-8 place-items-center rounded-full border-2 transition', on ? 'pop border-primary bg-primary text-primary-fg glow-primary' : 'border-white/50 bg-black/40')}>{on && <Check size={18} strokeWidth={3} />}</span>
-                  </label>
-                </li>
+                <button key={x._id} role="tab" aria-selected={on} onClick={() => setPicked(x._id)}
+                  className={clsx('!h-auto shrink-0 !flex-col !items-start !gap-0.5 !rounded-xl !px-4 !py-2 text-left', on ? '!bg-primary !text-primary-fg' : 'sec !bg-surface2/60 !text-fg')}>
+                  <span className="font-display text-base font-bold uppercase tracking-wide">{s === 'home' ? 'vs' : '@'} {opp}</span>
+                  <span className={clsx('flex items-center gap-1.5 text-xs font-medium', on ? 'text-primary-fg/80' : 'text-muted')}>{day(x.start)}{set > 0 && <span className="inline-flex items-center gap-0.5"><Check size={12} aria-hidden />{set} set</span>}</span>
+                </button>
               );
             })}
-          </ul>
-          <div className="sticky bottom-[calc(64px+env(safe-area-inset-bottom))] z-20 -mx-4 mt-3 border-t border-primary/40 bg-bg/90 p-3 shadow-[0_-8px_32px_-8px_rgb(var(--primary)/.45)] backdrop-blur md:bottom-0 md:mx-0 md:rounded-xl md:border">
-            <Button className="w-full" onClick={save}>Save lineup ({sel.size} selected)</Button>
           </div>
+
+          {detail.error && <p role="alert" className="text-danger">{detail.error}</p>}
+          {!m ? !detail.error && <Loading /> : (
+            <Builder key={`${cur}`} squad={detail.data.squads[side]} initial={{ meta: m.lineupMeta?.[side], ids: m.lineups?.[side] }} onSave={save} saving={busy} />
+          )}
+          <div className="mt-3"><Msg {...msg} /></div>
         </>
       )}
-    </Card>
+    </div>
   );
 }

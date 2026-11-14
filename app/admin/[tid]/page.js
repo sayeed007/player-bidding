@@ -3,8 +3,9 @@ import Link from 'next/link';
 import { use } from 'react';
 import { AlertTriangle, ArrowRight, CheckCircle2, Clock3 } from 'lucide-react';
 import { useApi } from '@/lib/client';
-import { Badge, Card, Empty, PageHeader, Skeleton, StatusBadge, Stat, Table, dt } from '@/components/ui';
+import { Badge, Card, Empty, PageHeader, Skeleton, StatusBadge, Stat, Table } from '@/components/ui';
 import { STATUS_ORDER, statusIndex, statusLabel } from '@/lib/setup';
+import { arr, byId, MatchCard } from '@/app/t/[tid]/ops';
 
 const TOP = new Set(['pending', 'pendingTeams', 'pendingResults']);
 
@@ -13,6 +14,7 @@ export default function Dashboard({ params }) {
   const { data, error, reload } = useApi(`/api/t/${tid}/dashboard`, { poll: 10000 });
   const { data: t, error: tournamentError, reload: reloadTournament } = useApi(`/api/t/${tid}`);
   const { data: readiness, error: readinessError } = useApi(`/api/t/${tid}/readiness`);
+  const teamMap = byId(arr(useApi(`/api/t/${tid}/teams`).data, 'teams')); // crests and colours for the match cards
   const cur = t ? statusIndex(t.status) : -1;
   const attention = (data?.widgets || []).filter((w) => TOP.has(w.key) && Number(w.value) > 0);
   const blockers = readiness?.errors || [];
@@ -79,11 +81,9 @@ export default function Dashboard({ params }) {
       </Card>
 
       <Card title="Upcoming fixtures" right={<Link href={`/admin/${tid}/fixtures`} className="text-sm">All fixtures</Link>}>
-        {!data ? error ? <Empty>Could not load upcoming fixtures.</Empty> : <Skeleton className="h-16" /> : <Table rows={data.upcoming} empty="No upcoming fixtures." cols={[
-          { key: 'm', label: 'Match', render: (m) => `${m.home || '?'} vs ${m.away || '?'}` },
-          { key: 'start', label: 'When', render: (m) => dt(m.start) },
-          { key: 'venue', label: 'Venue', render: (m) => m.venue || '—' },
-        ]} />}
+        {!data ? error ? <Empty>Could not load upcoming fixtures.</Empty> : <Skeleton className="h-16" /> : !data.upcoming.length ? <Empty>No upcoming fixtures.</Empty> : (
+          <div className="grid gap-3 md:grid-cols-2">{data.upcoming.map((m) => <MatchCard key={m._id} plain m={m} teams={teamMap} />)}</div>
+        )}
       </Card>
     </>
   );

@@ -37,7 +37,7 @@ export default function Results({ params }) {
   if (mid) return (
     <div className="flex flex-col">
       <Msg {...msg} />
-      <MatchPanel key={mid} base={base} mid={mid} flash={flash} onChange={reload} close={() => setMid(null)} />
+      <MatchPanel key={mid} base={base} mid={mid} flash={flash} msg={msg} onChange={reload} close={() => setMid(null)} />
     </div>
   );
   return (
@@ -68,7 +68,7 @@ export default function Results({ params }) {
   );
 }
 
-function MatchPanel({ base, mid, flash, onChange, close }) {
+function MatchPanel({ base, mid, flash, msg, onChange, close }) {
   const { data, error, reload } = useApi(`${base}/matches/${mid}`);
   const [sheet, setSheet] = useState(null); // { type, playerId, assistPlayerId, inPlayerId, minute, period }
   const [reason, setReason] = useState('');
