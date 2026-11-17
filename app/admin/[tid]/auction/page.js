@@ -100,8 +100,13 @@ export default function ControlRoom({ params }) {
         <Card title="Lot controls">
           <div className="grid gap-3">
             <div>
+              {d.config.selection === 'sequence' ? <>
+                <div className="mb-1 text-xs font-medium text-muted">Category order</div>
+                <div className="flex flex-wrap items-center gap-1.5">{(d.config.order || []).map((c) => <span key={c} className={clsx('rounded-lg px-3 py-1.5 font-display text-sm font-bold uppercase tracking-wider', c === d.config.currentCategory ? 'grad-volt glow-primary text-black' : 'bg-surface2 text-muted')}>{c}</span>)}</div>
+                <p className="mb-0 mt-1.5 text-xs text-muted">{d.config.currentCategory ? `Now: category ${d.config.currentCategory}. Every player in it must be sold before the next category starts.` : 'All categories are done.'}</p>
+              </> : <>
               <div className="mb-1 text-xs font-medium text-muted">Random pick from</div>
-              <Segmented value={cat} onChange={setCat} options={[{ value: '', label: 'Any' }, ...cats.map((c) => ({ value: c.code, label: c.code }))]} />
+              <Segmented value={cat} onChange={setCat} options={[{ value: '', label: 'Any' }, ...cats.map((c) => ({ value: c.code, label: c.code }))]} /></>}
             </div>
             {l?.tie && (
               <div role="status" className="flex flex-wrap items-center gap-3 rounded-xl border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning">
@@ -115,7 +120,7 @@ export default function ControlRoom({ params }) {
             <label className="flex min-h-[40px] items-center gap-2 text-sm text-muted"><input type="checkbox" className="h-5 w-5" checked={autoOpen} onChange={(e) => toggleAuto(e.target.checked)} />Open bidding right after picking a player</label>
             {/* 6 controls = 2 rows x 3 columns */}
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
-              <B a="random-pick" label="Pick random" icon={Dices} data={{ category: cat || undefined }} off={!live || !!l} ok={(x) => `Picked ${x.name} (from ${x.candidates} candidates)`} />
+              <B a="random-pick" label="Pick random" icon={Dices} data={{ category: d.config.selection === 'sequence' ? undefined : cat || undefined }} off={!live || !!l} ok={(x) => `Picked ${x.name} (from ${x.candidates} candidates)`} />
               <B a="open" label="Open bidding" icon={Gavel} variant="success" off={!live || !l || l.open} />
               {paused
                 ? <B a="resume" label="Resume" icon={Play} variant="success" />
@@ -167,7 +172,8 @@ export default function ControlRoom({ params }) {
             <Field label="Team">
               <select value={alloc.teamId} onChange={(e) => setAlloc({ ...alloc, teamId: e.target.value })}>
                 <option value="">Select team...</option>
-                {d.teams.map((x) => <option key={x._id} value={x._id}>{x.name}{x._id === suggested ? ' (suggested)' : ''} · {money(x.remaining)} left</option>)}
+                {d.teams.map((x) => { const cc = d.config.categories.find((c) => c.code === l.player?.category), full = x.slots <= 0 || (cc && (x.counts?.[cc.code] || 0) >= cc.max);
+                  return <option key={x._id} value={x._id} disabled={full}>{x.name}{x._id === suggested ? ' (suggested)' : ''} · {money(x.remaining)} left{full ? ` · ${x.slots <= 0 ? 'squad full' : `${cc.code} quota full`}` : ''}</option>; })}
               </select>
             </Field>
             <Field label="Price"><input type="number" inputMode="numeric" min="0" value={alloc.price} onChange={(e) => setAlloc({ ...alloc, price: e.target.value })} /></Field>
