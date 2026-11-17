@@ -19,7 +19,7 @@ export default function Team({ params }) {
       const row = arr(st, 'rows').find((x) => String(x.teamId) === String(teamId));
       const matches = arr(mt, 'matches').filter((m) => [m.homeTeamId, m.awayTeamId].map(String).includes(String(teamId))).sort((a, b) => String(a.start).localeCompare(String(b.start)));
       const spend = squad.some((p) => p.price != null) ? squad.reduce((s, p) => s + (p.price || 0), 0) : null;
-      const cats = [...new Set(squad.map((p) => p.category || '—'))].sort();
+      const cats = [...new Set(squad.map((p) => p.category || ''))].sort(); // '' = categories hidden: one plain group
       const color = team.color || 'rgb(var(--primary))';
       // this team's leaders, from the same derived stats as the tournament page; value > 0 only
       const top = (k) => ps.filter((x) => x[k] > 0).sort((a, b) => b[k] - a[k] || a.name.localeCompare(b.name)).map((x) => ({ ...x, value: x[k] }));
@@ -58,9 +58,9 @@ export default function Team({ params }) {
           <SectionTitle>{`Squad (${squad.length})`}</SectionTitle>
           {!squad.length ? <Empty>No players yet.</Empty> : cats.map((c) => (
             <div key={c} className="mb-5">
-              <div className="mb-2 flex items-center gap-2 font-display text-sm font-semibold uppercase tracking-widest text-muted"><CatChip code={c} />Category {c}</div>
+              {c && <div className="mb-2 flex items-center gap-2 font-display text-sm font-semibold uppercase tracking-widest text-muted"><CatChip code={c} />Category {c}</div>}
               <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-                {squad.filter((p) => (p.category || '—') === c).map((p) => (
+                {squad.filter((p) => (p.category || '') === c).map((p) => (
                   <div key={p._id} className="relative">
                     <PlayerTile player={p} href={`/t/${tid}/players/${p._id}`} price={price(p.price)} />
                     {p.captain && <span className="absolute bottom-2 right-2 rounded-md bg-warning px-1.5 text-xs font-extrabold text-black">C</span>}

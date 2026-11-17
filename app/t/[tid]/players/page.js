@@ -48,7 +48,7 @@ export default function Players({ params }) {
                 <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" aria-hidden />
                 <input type="search" aria-label="Search players" placeholder="Search by player name" value={f.q} onChange={(e) => set('q', e.target.value)} className="!pl-10" />
               </label>
-              <div role="group" aria-label="Category" className="-mx-1 mt-2 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {uniq('category').length > 0 && <div role="group" aria-label="Category" className="-mx-1 mt-2 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {[['', 'All'], ...uniq('category').map((c) => [c, `Cat ${c}`])].map(([v, l]) => {
                   const on = f.category === v;
                   return (
@@ -57,7 +57,7 @@ export default function Players({ params }) {
                       style={on && v ? { background: `linear-gradient(135deg, ${(CAT[v] || CAT.D).from}, ${(CAT[v] || CAT.D).to})`, color: '#fff', boxShadow: `0 0 20px -4px ${(CAT[v] || CAT.D).from}` } : undefined}>{l}</button>
                   );
                 })}
-              </div>
+              </div>}
               <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <select className={FILTER_SELECT} aria-label="Position" value={f.position} onChange={(e) => set('position', e.target.value)}>
                   <option value="">All positions</option>{uniq('position').map((c) => <option key={c}>{c}</option>)}</select>
@@ -72,7 +72,7 @@ export default function Players({ params }) {
             {!rows.length ? <Empty>No players match.</Empty> : (
               <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-5">
                 {rows.slice(0, shown).map((p) => (
-                  <PlayerTile key={p._id} player={p} team={tm[String(p.teamId)]} price={price(p.price)} href={`/t/${tid}/players/${p._id}`} />
+                  <PlayerTile key={p._id} player={p} team={tm[String(p.teamId)]} price={price(p.price) ?? (p.basePrice != null ? `Base ${p.basePrice}` : null)} href={`/t/${tid}/players/${p._id}`} />
                 ))}
               </div>
             )}

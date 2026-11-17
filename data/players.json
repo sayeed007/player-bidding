@@ -165,6 +165,17 @@
   "matchScore": 1
  },
  {
+  "name": "Md. Taufiqur Rahman",
+  "position": "DEF",
+  "category": "D",
+  "sheetName": "Taufiq",
+  "department": "Software",
+  "employeeId": "200188",
+  "company": "Neural Soft",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476621/nftms/200188.jpg",
+  "matchScore": 0.75
+ },
+ {
   "name": "Nishith Nibrash",
   "position": "Def / Mid",
   "category": "A",
@@ -198,14 +209,14 @@
   "matchScore": 1
  },
  {
-  "name": "Jamiul Islam",
-  "position": "Striker",
+  "name": "Md. Ashraful Alam",
+  "position": "DEF",
   "category": "D",
-  "sheetName": "Jamiul Islam",
-  "department": "Software",
-  "employeeId": "200065",
-  "company": "Neural Soft",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476614/nftms/200065.jpg",
+  "sheetName": "Md. Ashraful Alam",
+  "department": "Physical Design",
+  "employeeId": "200336",
+  "company": "Neural Semiconductor",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476615/nftms/200336.jpg",
   "matchScore": 1
  },
  {
@@ -242,26 +253,26 @@
   "matchScore": 1
  },
  {
-  "name": "Md. Ashraful Alam",
-  "position": "DEF",
+  "name": "Ragib Yeaser",
+  "position": "",
   "category": "D",
-  "sheetName": "Md. Ashraful Alam",
-  "department": "Physical Design",
-  "employeeId": "200336",
+  "sheetName": "Raghib Yeasir",
+  "department": "AMS Circuit Design",
+  "employeeId": "200301",
   "company": "Neural Semiconductor",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476615/nftms/200336.jpg",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794477392/nftms/200301.jpg",
   "matchScore": 1
  },
  {
-  "name": "Md. Shahriea Sadman",
-  "position": "CMF",
+  "name": "Quazi Md. Mohebur Rahman",
+  "position": "DEF",
   "category": "A",
-  "sheetName": "Md. Shahriea Sadman",
-  "department": "Design Verification",
-  "employeeId": "200169",
-  "company": "Ptecs",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476615/nftms/200169.jpg",
-  "matchScore": 1
+  "sheetName": "Mohebur Rahman",
+  "department": "Management",
+  "employeeId": "200013",
+  "company": "Neural Semiconductor",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476621/nftms/200013.jpg",
+  "matchScore": 0.83
  },
  {
   "name": "Sheikh Shoaib Md. Tanmoy",
@@ -286,14 +297,14 @@
   "matchScore": 1
  },
  {
-  "name": "Ragib Yeaser",
-  "position": "",
+  "name": "Md. Nasim Reza",
+  "position": "CMF",
   "category": "D",
-  "sheetName": "Raghib Yeasir",
-  "department": "AMS Circuit Design",
-  "employeeId": "200301",
+  "sheetName": "Md Nasim Reza",
+  "department": "Physical Design",
+  "employeeId": "200168",
   "company": "Neural Semiconductor",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794477392/nftms/200301.jpg",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476617/nftms/200168.jpg",
   "matchScore": 1
  },
  {
@@ -319,25 +330,25 @@
   "matchScore": 0.67
  },
  {
-  "name": "Pratashoi Sarker Partha",
-  "position": "DEF",
-  "category": "C",
-  "sheetName": "Partha",
-  "department": "RF IC Design",
-  "employeeId": "200033",
+  "name": "Kawsar Ahmed",
+  "position": "GK",
+  "category": "B",
+  "sheetName": "Kawser",
+  "department": "Custom Layout Design",
+  "employeeId": "200140",
   "company": "Neural Semiconductor",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476651/nftms/200033.jpg",
-  "matchScore": 0.67
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794477372/nftms/200140.jpg",
+  "matchScore": 1
  },
  {
-  "name": "Md. Nasim Reza",
-  "position": "CMF",
+  "name": "Shaiful Islam",
+  "position": "CF",
   "category": "D",
-  "sheetName": "Md Nasim Reza",
-  "department": "Physical Design",
-  "employeeId": "200168",
+  "sheetName": "Shaiful Islam",
+  "department": "Human Resources",
+  "employeeId": "200212",
   "company": "Neural Semiconductor",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476617/nftms/200168.jpg",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476618/nftms/200212.jpg",
   "matchScore": 1
  },
  {
@@ -353,7 +364,7 @@
  },
  {
   "name": "Md Rifayat Abbasi",
-  "position": "",
+  "position": "ST",
   "category": "B",
   "sheetName": "Rifayat Abbasi",
   "department": "Custom Layout Design",
@@ -363,26 +374,26 @@
   "matchScore": 1
  },
  {
-  "name": "Md. Shafiul Huda Eraz",
-  "position": "Striker / CB",
+  "name": "Mohammad Wafin Irsaliah",
+  "position": "RWF",
   "category": "C",
-  "sheetName": "Shafiul Huda Eraz",
-  "department": "Custom Layout Design",
-  "employeeId": "200152",
+  "sheetName": "Mohammad Wafin Irsaliah",
+  "department": "Physical Design",
+  "employeeId": "200132",
   "company": "Neural Semiconductor",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476617/nftms/200152.png",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476620/nftms/200132.jpg",
   "matchScore": 1
  },
  {
-  "name": "Shaiful Islam",
-  "position": "CF",
+  "name": "Ebadur Rahman Khan",
+  "position": "CB",
   "category": "D",
-  "sheetName": "Shaiful Islam",
-  "department": "Human Resources",
-  "employeeId": "200212",
+  "sheetName": "Ebadur",
+  "department": "AMS Circuit Design",
+  "employeeId": "200278",
   "company": "Neural Semiconductor",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476618/nftms/200212.jpg",
-  "matchScore": 1
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794898618/nftms/200278.jpg",
+  "matchScore": 0.67
  },
  {
   "name": "Mohammad Ashfaqur Rahman Asif",
@@ -397,7 +408,7 @@
  },
  {
   "name": "Abu Sayed Hasan",
-  "position": "",
+  "position": "DEF",
   "category": "B",
   "sheetName": "Sayed Hasan",
   "department": "Custom Layout Design",
@@ -405,50 +416,6 @@
   "company": "Neural Semiconductor",
   "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476620/nftms/200149.jpg",
   "matchScore": 0.83
- },
- {
-  "name": "Mohammad Wafin Irsaliah",
-  "position": "RWF",
-  "category": "C",
-  "sheetName": "Mohammad Wafin Irsaliah",
-  "department": "Physical Design",
-  "employeeId": "200132",
-  "company": "Neural Semiconductor",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476620/nftms/200132.jpg",
-  "matchScore": 1
- },
- {
-  "name": "Kawsain Bin Salim",
-  "position": "DMF",
-  "category": "D",
-  "sheetName": "Kawsain Bin Salim",
-  "department": "Physical Design",
-  "employeeId": "200331",
-  "company": "Neural Semiconductor",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476619/nftms/200331.jpg",
-  "matchScore": 1
- },
- {
-  "name": "Md Kayum Hossan",
-  "position": "Defender",
-  "category": "A",
-  "sheetName": "Md Kayum Hossan",
-  "department": "Software",
-  "employeeId": "200321",
-  "company": "Neural Soft",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476622/nftms/200321.png",
-  "matchScore": 1
- },
- {
-  "name": "Md. Roman Hossain",
-  "position": "",
-  "category": "B",
-  "sheetName": "Roman Hossain",
-  "department": "Custom Layout Design",
-  "employeeId": "200213",
-  "company": "Neural Semiconductor",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476620/nftms/200213.jpg",
-  "matchScore": 1
  },
  {
   "name": "Khandaker Fidak M. Rahman",
@@ -473,6 +440,50 @@
   "matchScore": 0.67
  },
  {
+  "name": "Md Kayum Hossan",
+  "position": "Defender",
+  "category": "A",
+  "sheetName": "Md Kayum Hossan",
+  "department": "Software",
+  "employeeId": "200321",
+  "company": "Neural Soft",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476622/nftms/200321.png",
+  "matchScore": 1
+ },
+ {
+  "name": "Md. Roman Hossain",
+  "position": "MID",
+  "category": "B",
+  "sheetName": "Roman Hossain",
+  "department": "Custom Layout Design",
+  "employeeId": "200213",
+  "company": "Neural Semiconductor",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476620/nftms/200213.jpg",
+  "matchScore": 1
+ },
+ {
+  "name": "Md. Nahian Rabbi Ushan",
+  "position": "DEF",
+  "category": "C",
+  "sheetName": "Ushan",
+  "department": "Custom Layout Design",
+  "employeeId": "200256",
+  "company": "Neural Semiconductor",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794477591/nftms/200256.jpg",
+  "matchScore": 1
+ },
+ {
+  "name": "Md. Anas Rahman",
+  "position": "DEF",
+  "category": "D",
+  "sheetName": "Anas",
+  "department": "Custom Layout Design",
+  "employeeId": "200326",
+  "company": "Neural Semiconductor",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794898620/nftms/200326.png",
+  "matchScore": 0.75
+ },
+ {
   "name": "Md. Azadur Rahman",
   "position": "ST",
   "category": "A",
@@ -485,7 +496,7 @@
  },
  {
   "name": "Md. Shafin Hossain",
-  "position": "",
+  "position": "DEF",
   "category": "B",
   "sheetName": "Shafin Hossain",
   "department": "RF IC Design",
@@ -495,26 +506,26 @@
   "matchScore": 1
  },
  {
-  "name": "Md. Nahian Rabbi Ushan",
-  "position": "",
+  "name": "Jamiul Islam",
+  "position": "FW",
   "category": "C",
-  "sheetName": "Ushan",
-  "department": "Custom Layout Design",
-  "employeeId": "200256",
-  "company": "Neural Semiconductor",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794477591/nftms/200256.jpg",
+  "sheetName": "Jamiul Islam",
+  "department": "Software",
+  "employeeId": "200065",
+  "company": "Neural Soft",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476614/nftms/200065.jpg",
   "matchScore": 1
  },
  {
-  "name": "Md. Taufiqur Rahman",
+  "name": "Md Mahfuzar Rahman Riad",
   "position": "DEF",
   "category": "D",
-  "sheetName": "Taufiq",
-  "department": "Software",
-  "employeeId": "200188",
-  "company": "Neural Soft",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476621/nftms/200188.jpg",
-  "matchScore": 0.75
+  "sheetName": "Riyad",
+  "department": "Custom Layout Design",
+  "employeeId": "200327",
+  "company": "Neural Semiconductor",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794900132/nftms/200327.jpg",
+  "matchScore": 1
  },
  {
   "name": "Istiyak Ahmed Molla",
@@ -539,19 +550,19 @@
   "matchScore": 0.75
  },
  {
-  "name": "Kawsar Ahmed",
-  "position": "GK",
+  "name": "Md. Shafiul Huda Eraz",
+  "position": "Striker / CB",
   "category": "B",
-  "sheetName": "Kawser",
+  "sheetName": "Shafiul Huda Eraz",
   "department": "Custom Layout Design",
-  "employeeId": "200140",
+  "employeeId": "200152",
   "company": "Neural Semiconductor",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794477372/nftms/200140.jpg",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476617/nftms/200152.png",
   "matchScore": 1
  },
  {
   "name": "Md. Al-Amin Patwary",
-  "position": "",
+  "position": "MID",
   "category": "B",
   "sheetName": "Patwary",
   "department": "Memory Design",
@@ -561,15 +572,15 @@
   "matchScore": 0.67
  },
  {
-  "name": "Quazi Md. Mohebur Rahman",
-  "position": "Defender",
+  "name": "Md. Shahriea Sadman",
+  "position": "MID",
   "category": "B+",
-  "sheetName": "Mohebur Rahman",
-  "department": "Management",
-  "employeeId": "200013",
-  "company": "Neural Semiconductor",
-  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476621/nftms/200013.jpg",
-  "matchScore": 0.83
+  "sheetName": "Md. Shahriea Sadman",
+  "department": "Design Verification",
+  "employeeId": "200169",
+  "company": "Ptecs",
+  "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794476615/nftms/200169.jpg",
+  "matchScore": 1
  },
  {
   "name": "Mohidul Islam Khan Robin",
@@ -647,14 +658,5 @@
   "company": "Neural Soft",
   "photo": "https://res.cloudinary.com/ujuu5uia/image/upload/v1794477374/nftms/200226.png",
   "matchScore": 1
- },
- {
-  "name": "Dummy Player (D)",
-  "sheetName": "Dummy Player (D)",
-  "position": "Mid",
-  "category": "D",
-  "department": "",
-  "employeeId": "",
-  "photo": ""
  }
 ]

@@ -94,7 +94,7 @@ export default function Projector({ params }) {
             <div className="absolute inset-x-0 bottom-0 min-w-0 p-[5%] text-left">
               <div className="font-display font-bold uppercase leading-[.92] tracking-wide drop-shadow-[0_4px_20px_rgb(0_0_0/.8)]" style={{ fontSize: vm(28, 6, 130), wordBreak: 'break-word' }}>{p.name}</div>
               <div className="mt-[0.6vmin] flex flex-wrap items-center gap-[0.8vmin] font-bold" style={{ fontSize: vm(12, 2.2, 44) }}>
-                <span className={clsx('rounded-lg px-[0.6em] py-[0.1em] font-extrabold', c.chip)}>Cat {p.category}</span>
+                {p.category && <span className={clsx('rounded-lg px-[0.6em] py-[0.1em] font-extrabold', c.chip)}>Cat {p.category}</span>}
                 {p.position && <span className="rounded-lg bg-white/15 px-[0.6em] py-[0.1em] backdrop-blur">{p.position}</span>}
                 <span className="rounded-lg bg-black/55 px-[0.6em] py-[0.1em] backdrop-blur">Base <span className="tabular-nums text-primary">{money(p.basePrice)}</span></span>
               </div>

@@ -7,7 +7,7 @@ const { NEXT_PUBLIC_CLOUDINARY_CLOUD: cloud, NEXT_PUBLIC_CLOUDINARY_PRESET: pres
 const players = JSON.parse(readFileSync('.tmp/players.sheet.json', 'utf8'));
 const emps = JSON.parse(readFileSync('.tmp/employees.json', 'utf8'));
 // Confirmed by hand (sheet name -> employee id); skipped by fuzzy matching.
-const OVERRIDE = { Azad: 200083, Tanzid: 200146, Saadman: 200012, Digonto: 200312, Kawser: 200140, 'Raghib Yeasir': 200301, Shazedur: 200261, Siddikur: 200226, Ushan: 200256, Fidak: 200307, Robin: 200281 };
+const OVERRIDE = { Azad: 200083, Tanzid: 200146, Saadman: 200012, Digonto: 200312, Kawser: 200140, 'Raghib Yeasir': 200301, Shazedur: 200261, Siddikur: 200226, Ushan: 200256, Fidak: 200307, Robin: 200281, Riyad: 200327 };
 const REMOVE = new Set();
 const AMBIGUOUS = new Set([...Object.keys(OVERRIDE), ...REMOVE]);
 

@@ -21,6 +21,7 @@ export default function ControlRoom({ params }) {
   const [cat, setCat] = useState('');
   const [fix, setFix] = useState({ saleId: '', newTeamId: '', newPrice: '', reason: '' });
   const [more, setMore] = useState(false);
+  const [alloc, setAlloc] = useState(null); // {teamId, price}: the admin's allocation popup
   const [fixOpen, setFixOpen] = useState(false);
   const [confirm, setConfirm] = useState(null); // {title, text, label, run}
   const left = useLeft(d);
@@ -58,7 +59,15 @@ export default function ControlRoom({ params }) {
     <Button size="lg" variant={variant} icon={busy === a ? Loader2 : icon} className={clsx(CELL, busy === a && '[&_svg]:animate-spin', variant === 'success' && !off && !busy && 'grad-volt glow-primary', variant === 'secondary' && 'border-cyan/40', className)} disabled={off || !!busy} onClick={() => go()}>{busy === a ? (PENDING[a] || 'Working…') : label}</Button>
     );
   };
-  const canSell = live && l && l.leaderTeamId && !l.held;
+  const adminAlloc = d.config.allocation !== 'auto';
+  const canSell = live && l && !l.held && (adminAlloc || l.leaderTeamId);
+  // bids only suggest: the lottery winner if one was drawn, else the top bidder
+  const suggested = l && (d.teams.find((x) => l.lottery?.revealed && x.name === l.lottery.winner)?._id || l.leaderTeamId || '');
+  const openAlloc = () => setAlloc({ teamId: suggested, price: String(l.bid) });
+  const sellTo = () => {
+    const a = alloc; setAlloc(null);
+    act('close', { outcome: 'sold', teamId: a.teamId, price: Number(a.price) }, 'Sold');
+  };
 
   return (
     <main className="pb-8">
@@ -111,8 +120,10 @@ export default function ControlRoom({ params }) {
               {paused
                 ? <B a="resume" label="Resume" icon={Play} variant="success" />
                 : <B a="pause" label="Pause" icon={Pause} variant="secondary" off={!live} />}
-              <B a="close" label="Sold" icon={CheckCircle2} variant="success" data={{ outcome: 'sold' }} off={!canSell || !!l?.tie || (!!l?.lottery && !l.lottery.revealed)}
-                ok={(r) => (r.lottery ? `Sold to ${r.lottery.winner} after the lottery` : 'Sold')} />
+              {adminAlloc
+                ? <Button size="lg" variant="success" icon={CheckCircle2} className={clsx(CELL, canSell && !busy && 'grad-volt glow-primary')} disabled={!canSell || !!busy} onClick={openAlloc}>{busy === 'close' ? 'Saving…' : 'Sold'}</Button>
+                : <B a="close" label="Sold" icon={CheckCircle2} variant="success" data={{ outcome: 'sold' }} off={!canSell || !!l?.tie || (!!l?.lottery && !l.lottery.revealed)}
+                  ok={(r) => (r.lottery ? `Sold to ${r.lottery.winner} after the lottery` : 'Sold')} />}
               <Button size="lg" variant="secondary" icon={XCircle} className={CELL} disabled={!live || !l || l.held || !!busy}
                 onClick={() => l.leaderTeamId
                   ? ask('Mark unsold?', `${l.player?.name} has a bid of ${money(l.bid)}. Marking unsold discards it.`, 'Mark unsold', () => act('close', { outcome: 'unsold', force: true }, 'Marked unsold'))
@@ -148,6 +159,22 @@ export default function ControlRoom({ params }) {
         <Summary data={sum.data} error={sum.error} retry={sum.reload} d={d} lotOpen={!!l}
           onComplete={(exception) => ask('Complete the auction?', 'This closes the auction for good.', 'Complete auction', () => act('complete', { exception }, 'Auction completed'))} />
       </>}
+
+      <Sheet open={!!alloc} onClose={() => setAlloc(null)} title="Allocate player">
+        {alloc && l && (
+          <div className="grid gap-3">
+            <p className="m-0 text-sm text-muted"><b className="text-fg">{l.player?.name}</b>: {l.leaderTeamId ? <>top bid <b>{money(l.bid)}</b> by {d.teams.find((x) => x._id === l.leaderTeamId)?.name}</> : <>no bids, base {money(l.bid)}</>}. You decide who gets the player.</p>
+            <Field label="Team">
+              <select value={alloc.teamId} onChange={(e) => setAlloc({ ...alloc, teamId: e.target.value })}>
+                <option value="">Select team...</option>
+                {d.teams.map((x) => <option key={x._id} value={x._id}>{x.name}{x._id === suggested ? ' (suggested)' : ''} · {money(x.remaining)} left</option>)}
+              </select>
+            </Field>
+            <Field label="Price"><input type="number" inputMode="numeric" min="0" value={alloc.price} onChange={(e) => setAlloc({ ...alloc, price: e.target.value })} /></Field>
+            <Button size="lg" variant="success" icon={CheckCircle2} disabled={!alloc.teamId || !alloc.price || !!busy} onClick={sellTo}>Confirm sale</Button>
+          </div>
+        )}
+      </Sheet>
 
       <Sheet open={more} onClose={() => setMore(false)} title="More actions">
         <div className="grid gap-2">

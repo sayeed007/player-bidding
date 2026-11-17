@@ -10,11 +10,13 @@ export const CAT = {
   C: { chip: 'bg-[#a78bfa] text-black', from: '#8b5cf6', to: '#ff2e97', glow: 'shadow-[0_0_30px_-6px_#8b5cf6]' },
   D: { chip: 'bg-[#cbd5e1] text-black', from: '#94a3b8', to: '#475569', glow: 'shadow-[0_0_30px_-6px_#94a3b8]' },
 };
-export const catOf = (code) => CAT[code] || CAT.D;
+// no category (hidden from the public): one neutral look for every player
+const NEUTRAL = { chip: 'bg-[#cbd5e1] text-black', from: '#1d4ed8', to: '#0f172a', glow: 'shadow-[0_0_30px_-6px_#3b82f6]' };
+export const catOf = (code) => (code ? CAT[code] || CAT.D : NEUTRAL);
 export const CAT_COLOR = Object.fromEntries(Object.entries(CAT).map(([k, v]) => [k, v.chip]));
-export const CatChip = ({ code, className }) => (
+export const CatChip = ({ code, className }) => code ? (
   <span className={clsx('inline-flex min-w-[28px] items-center justify-center rounded-md px-1.5 py-0.5 text-xs font-extrabold', catOf(code).chip, className)}>{code}</span>
-);
+) : null;
 
 /** Team logo or coloured initials + name. */
 export const TeamBadge = ({ team, size = 28, className, nameClass }) => (
@@ -50,7 +52,7 @@ export function PlayerTile({ player, team, price, href, className }) {
   return (
     <Wrap href={href} className={clsx('group block overflow-hidden rounded-2xl text-fg no-underline hover:no-underline', href && 'transition hover:-translate-y-0.5', className)}>
       <PlayerPhoto player={player}>
-        <span className={clsx('absolute left-2 top-2 rounded-md px-2 py-0.5 text-xs font-extrabold', catOf(player.category).chip)}>{player.category}</span>
+        {player.category && <span className={clsx('absolute left-2 top-2 rounded-md px-2 py-0.5 text-xs font-extrabold', catOf(player.category).chip)}>{player.category}</span>}
         {price != null && <span className="absolute right-2 top-2 rounded-md bg-black/60 px-2 py-0.5 text-xs font-bold text-primary backdrop-blur">{price}</span>}
         <div className="absolute inset-x-0 bottom-0 p-3">
           <div className="font-display text-lg font-semibold uppercase leading-tight tracking-wide drop-shadow">{player.name}</div>

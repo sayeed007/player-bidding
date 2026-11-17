@@ -20,13 +20,13 @@ export default function Player({ params }) {
           {/* true portrait ratio on every screen: never a wide crop */}
           <PlayerPhoto player={p} size="xl" className="!rounded-3xl md:sticky md:top-20 md:!aspect-[4/5]">
             <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2 md:hidden">
-              <CatChip code={p.category || '—'} className="!px-3 !py-1 !text-base" />
+              <CatChip code={p.category} className="!px-3 !py-1 !text-base" />
               {p.status && <StatusBadge status={p.status} />}
             </div>
-            {price(p.price) && (
+            {(price(p.price) || p.basePrice != null) && (
               <div className="absolute right-4 top-4 rounded-xl bg-black/60 px-3 py-1.5 text-right backdrop-blur">
-                <div className="text-[10px] font-semibold uppercase tracking-widest text-white/70">Sold for</div>
-                <div className="neon-text font-display text-2xl font-bold tabular-nums">{price(p.price)}</div>
+                <div className="text-[10px] font-semibold uppercase tracking-widest text-white/70">{price(p.price) ? 'Sold for' : 'Base price'}</div>
+                <div className="neon-text font-display text-2xl font-bold tabular-nums">{price(p.price) || p.basePrice}</div>
               </div>
             )}
             <div className="absolute inset-x-0 bottom-0 p-4 md:hidden">
@@ -43,7 +43,7 @@ export default function Player({ params }) {
             <div className="hidden md:block">
               <h1 className="m-0 break-words font-display text-6xl font-bold uppercase leading-none tracking-wide">{p.name}</h1>
               <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
-                <CatChip code={p.category || '—'} className="!px-3 !py-1 !text-base" />
+                <CatChip code={p.category} className="!px-3 !py-1 !text-base" />
                 <span className="rounded-full bg-white/10 px-3 py-1 font-semibold uppercase tracking-wider">{p.position || 'No position'}</span>
                 {p.status && <StatusBadge status={p.status} />}
                 {team

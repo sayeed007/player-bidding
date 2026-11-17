@@ -1,4 +1,5 @@
 import { api, body, col, fail, need, oid, tour, audit, json } from '@/lib/server';
+import { viewer } from '@/lib/setup-server';
 import { fromMin, toMin, validateSchedule } from '@/lib/fixtures';
 import { STATUSES, decorate, getMatch, isStaff, matchTitle, notifyTeams, squad } from '@/lib/matchapi';
 
@@ -10,7 +11,8 @@ export const GET = api(async (req, { params }) => {
   const m = await getMatch(tid, mid);
   const staff = await isStaff(tid);
   if (!m.published && !staff) fail(404, 'match not found');
-  const sq = [...(await squad(tid, m)).values()].map((p) => ({ _id: p._id, name: p.name, position: p.position, category: p.category, captain: p.captain, teamId: p.teamId, photo: p.photo }));
+  const cats = (await viewer(tid)).cats;
+  const sq = [...(await squad(tid, m)).values()].map((p) => ({ _id: p._id, name: p.name, position: p.position, ...(cats ? { category: p.category } : {}), captain: p.captain, teamId: p.teamId, photo: p.photo }));
   const side = (t) => sq.filter((p) => String(p.teamId) === String(t));
   return { match: (await decorate(tid, [m], staff))[0], squads: { home: side(m.homeTeamId), away: side(m.awayTeamId) } };
 });

@@ -9,8 +9,8 @@ const categories = [
   { code: 'A', name: 'Category A', price: 130, min: 2, max: 2, active: true, order: 1 },
   { code: 'B+', name: 'Category B+', price: 100, min: 1, max: 1, active: true, order: 2 },
   { code: 'B', name: 'Category B', price: 60, min: 3, max: 3, active: true, order: 3 },
-  { code: 'C', name: 'Category C', price: 40, min: 2, max: 2, active: true, order: 4 },
-  { code: 'D', name: 'Category D', price: 30, min: 2, max: 2, active: true, order: 5 },
+  { code: 'C', name: 'Category C', price: 40, min: 2, max: 2, active: true, order: 4, unsoldBump: 10 },
+  { code: 'D', name: 'Category D', price: 30, min: 2, max: 2, active: true, order: 5, unsoldBump: 10 },
 ];
 // Captains are B players pre-assigned at price 0 (they use one of their team's 3 B slots).
 const teams = [['Shafin', 'Shafin Hossain'], ['Noman', 'Ariful Haque Noman'], ['Shohan', 'Shohan'],
@@ -35,7 +35,7 @@ const { insertedId: tid } = await d.collection('tournaments').insertOne({
   matchDuration: 40, breakDuration: 10, pointsRule: { win: 3, draw: 1, loss: 0 },
   tiebreak: ['points', 'gd', 'gf', 'h2h'], rules: '',
   dates: {}, categories,
-  auction: { increment: 10, timerSec: 120, extendWithinSec: 0, extendToSec: 0, autoClose: false, unsoldPolicy: 'manual', publicPrices: true },
+  auction: { increment: 10, timerSec: 120, extendWithinSec: 0, extendToSec: 0, autoClose: false, unsoldPolicy: 'manual', allocation: 'admin', publicPrices: true },
   createdAt: new Date(),
 });
 const { insertedIds } = await d.collection('players').insertMany(players.map((p) => ({

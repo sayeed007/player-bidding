@@ -7,10 +7,9 @@ export const dynamic = 'force-dynamic';
 
 export const GET = api(async (_req, { params }) => {
   const t = await tour(params.tid);
-  if (t.visibility === 'private') {
-    const v = await viewer(t._id);
-    if (!v.staff && String(v.u?.tournamentId) !== String(t._id)) fail(404, 'tournament not found');
-  }
+  const v = await viewer(t._id);
+  if (t.visibility === 'private' && !v.staff && String(v.u?.tournamentId) !== String(t._id)) fail(404, 'tournament not found');
+  if (!v.cats) { const { categories, ...pub } = t; return pub; }
   return t;
 });
 

@@ -135,6 +135,7 @@ export default function Settings({ params }) {
                   <Field key={k} label={l}><input {...NUM} min="0" disabled={locked} value={c[k]} onChange={(e) => setCat(i, k, e.target.value)} /></Field>
                 ))}
               </div>
+              <Field className="mt-3" label="If unsold: base price goes up by" hint="0 = off. The player comes back at the end of this category's turn."><input {...NUM} min="0" value={c.unsoldBump ?? 0} onChange={(e) => setCat(i, 'unsoldBump', e.target.value)} /></Field>
               <div className="mt-2 flex items-center justify-between">
                 <label className="flex min-h-[44px] items-center gap-2 text-sm"><input type="checkbox" checked={c.active !== false} onChange={(e) => setCat(i, 'active', e.target.checked)} />Active</label>
                 <Button variant="ghost" size="md" icon={Trash2} className="!text-danger" disabled={locked} aria-label={`Remove category ${c.code}`} onClick={() => setF({ ...f, categories: cats.filter((_, j) => j !== i) })}>Remove</Button>
@@ -162,6 +163,7 @@ export default function Settings({ params }) {
           <Field label="…extend timer to (sec)"><input {...NUM} value={f.auction?.extendToSec} onChange={sub('auction', 'extendToSec')} /></Field>
           <Field label="Unsold policy"><select value={f.auction?.unsoldPolicy} onChange={sub('auction', 'unsoldPolicy')}><option value="manual">manual</option><option value="return_to_pool">return to pool</option><option value="reduce_base">reduce base</option></select></Field>
           <Field label="Reduce base by %"><input {...NUM} value={f.auction?.unsoldReducePct} onChange={sub('auction', 'unsoldReducePct')} /></Field>
+          <Field label="Who allocates the player" hint="Admin picks the team after bidding (bids only suggest), or the system sells to the top bidder."><select value={f.auction?.allocation || 'admin'} onChange={sub('auction', 'allocation')}><option value="admin">Admin decides</option><option value="auto">Automatic (top bidder)</option></select></Field>
           <Field label="Player selection"><select value={f.auction?.selection} onChange={sub('auction', 'selection')}><option>random</option><option>category</option></select></Field>
         </div>
         <label className="mt-2 flex min-h-[44px] items-center gap-2 text-sm"><input type="checkbox" checked={!!f.auction?.autoClose} onChange={sub('auction', 'autoClose')} />Auto-close lot when timer ends</label>

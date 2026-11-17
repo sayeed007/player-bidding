@@ -16,7 +16,7 @@ export const GET = api(async (req, { params }) => {
   const status = sp.get('status');
   if (status) q.status = all || PLAYER_PUBLIC.includes(status) ? status : '-';
   else if (!all) q.status = { $in: PLAYER_PUBLIC };
-  for (const k of ['category', 'position']) if (sp.get(k)) q[k] = sp.get(k);
+  for (const k of v.cats ? ['category', 'position'] : ['position']) if (sp.get(k)) q[k] = sp.get(k);
   const s = sp.get('q')?.trim().slice(0, 60);
   if (s) q.$or = [{ name: { $regex: escRe(s), $options: 'i' } }, ...(all ? [{ employeeId: { $regex: escRe(s), $options: 'i' } }] : [])];
   const players = await (await col('players')).find(q).sort({ name: 1 }).limit(2000).toArray();
