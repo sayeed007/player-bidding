@@ -1,7 +1,7 @@
 'use client';
 import { use } from 'react';
 import clsx from 'clsx';
-import { useAuction, useLeft, clock, isUrgent, statusText, activeCats } from '@/lib/auction-ui';
+import { useAuction, useLeft, clock, isUrgent, statusText, activeCats, LotteryReveal } from '@/lib/auction-ui';
 import { money } from '@/components/ui';
 import { catOf } from '@/components/cards';
 
@@ -60,6 +60,7 @@ export default function Projector({ params }) {
 
   return (
     <div className="fixed inset-0 z-[60] flex flex-col overflow-hidden bg-bg text-white" style={{ padding: vm(10, 1.6, 36), gap: vm(8, 1.2, 24) }}>
+      <LotteryReveal d={d} />
       {/* animated glows */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
         <div className="absolute -left-[10%] -top-[20%] h-[70vh] w-[60vw] animate-pulse rounded-full blur-3xl" style={{ background: `${c.from}`, opacity: 0.22, animationDuration: '5s' }} />

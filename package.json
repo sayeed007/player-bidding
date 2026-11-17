@@ -8,7 +8,9 @@
     "start": "next start",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
     "test": "node --test",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed:live": "node --env-file=.env.local scripts/seed-live.mjs",
+    "seed:testcup": "node --env-file=.env.local scripts/seed-testcup.mjs"
   },
   "dependencies": {
     "autoprefixer": "^10.4.20",

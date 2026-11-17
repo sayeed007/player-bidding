@@ -3,3 +3,6 @@ node_modules
 .env.local
 .tmp
 /.superpowers/
+.next-build
+.next-test
+.claude/

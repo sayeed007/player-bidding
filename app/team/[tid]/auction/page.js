@@ -36,20 +36,25 @@ export default function BidRoom({ params }) {
   const amount = next + extra * inc;
   const overMax = max != null && amount > max;
   const outbid = !!mine && !!l && !leading && wasLeading.current[l.no];
+  // Capped exactly at the current price (and so is the leader): cannot raise, but can "match" to enter a lottery
+  const canMatch = open && !!mine && !!mine.canMatch;
+  const matched = open && !!mine?.matched;
 
   // fresh idempotency key per click; seenBid makes a quick-bid on a moved price fail instead of overpaying
   const send = async () => {
     setBusy(true);
     await flash(async () => {
-      const r = await call(`/api/t/${tid}/auction/bid`, { amount, seenBid: extra === 0 ? l.bid : undefined, lotNo: l.no, key: newKey() });
+      const r = await call(`/api/t/${tid}/auction/bid`, canMatch ? { amount: l.bid, seenBid: l.bid, lotNo: l.no, key: newKey() } : { amount, seenBid: extra === 0 ? l.bid : undefined, lotNo: l.no, key: newKey() });
       reload();
       return r;
-    }, (r) => `Bid ${money(r.amount)} placed${r.replay ? ' (already received)' : ''}`);
+    }, (r) => (r.matched ? `You matched ${money(r.amount)}. If nobody raises, a lottery decides.` : `Bid ${money(r.amount)} placed${r.replay ? ' (already received)' : ''}`));
     setBusy(false);
   };
 
   const banner = !mine ? ['neutral', 'Viewing only: no team linked to this account.']
     : leading ? ['good', 'YOU ARE LEADING']
+    : matched ? ['good', `YOU MATCHED ${money(l.bid)}: lottery decides if nobody raises`]
+    : canMatch ? ['warn', `You cannot raise any further. Tap MATCH ${money(l.bid)} to enter a lottery for this player.`]
     : outbid ? ['bad', 'OUTBID']
     : mine.bidBlock && l ? ['warn', `You cannot bid on this player: ${mine.bidBlock}`]
     : null;
@@ -100,14 +105,14 @@ export default function BidRoom({ params }) {
         <div className="mx-auto max-w-xl">
           <Msg {...msg} />
           <div className="flex items-stretch gap-2">
-            <Button variant="secondary" className="!min-w-[52px]" aria-label="Decrease bid" disabled={!canBid || extra === 0} onClick={() => setExtra(extra - 1)}><Minus size={20} /></Button>
-            <Button size="lg" className={clsx("min-w-0 flex-1 !min-h-[60px] font-display !text-3xl uppercase tracking-wide tabular-nums", canBid && !busy && !overMax && "glow-primary")} disabled={!canBid || busy || overMax} onClick={send}>
-              {l ? (leading ? 'You lead' : <span key={amount} className="pop">Bid {money(amount)}</span>) : 'No lot open'}
+            <Button variant="secondary" className="!min-w-[52px]" aria-label="Decrease bid" disabled={!canBid || canMatch || extra === 0} onClick={() => setExtra(extra - 1)}><Minus size={20} /></Button>
+            <Button size="lg" className={clsx("min-w-0 flex-1 !min-h-[60px] font-display !text-3xl uppercase tracking-wide tabular-nums", canBid && !busy && !overMax && "glow-primary")} disabled={(!canBid && !canMatch) || busy || (overMax && !canMatch)} onClick={send}>
+              {l ? (leading ? 'You lead' : matched ? 'Matched' : canMatch ? <span key="m" className="pop">Match {money(l.bid)}</span> : <span key={amount} className="pop">Bid {money(amount)}</span>) : 'No lot open'}
             </Button>
-            <Button variant="secondary" className="!min-w-[52px]" aria-label="Increase bid" disabled={!canBid || (max != null && amount + inc > max)} onClick={() => setExtra(extra + 1)}><Plus size={20} /></Button>
+            <Button variant="secondary" className="!min-w-[52px]" aria-label="Increase bid" disabled={!canBid || canMatch || (max != null && amount + inc > max)} onClick={() => setExtra(extra + 1)}><Plus size={20} /></Button>
           </div>
           <div className="mt-2 min-h-4 text-center text-xs text-muted">
-            {canBid ? (extra === 0 ? `Quick bid: next valid amount (+${inc} steps)` : `Custom bid, +${money(extra * inc)} over minimum`) : !open && l ? 'Bidding is not open' : ''}
+            {canMatch ? 'Same price as the leader: if nobody raises, the admin draws a lottery between you' : canBid ? (extra === 0 ? `Quick bid: next valid amount (+${inc} steps)` : `Custom bid, +${money(extra * inc)} over minimum`) : !open && l ? 'Bidding is not open' : ''}
           </div>
         </div>
       </div>

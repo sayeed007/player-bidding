@@ -4,11 +4,11 @@ import { Avatar, Badge } from '@/components/ui';
 
 // Category = neon colour. `glow` is the shadow used on big cards.
 export const CAT = {
-  A: { chip: 'bg-amber-400 text-black', from: '#f59e0b', to: '#ef4444', glow: 'shadow-[0_0_30px_-6px_#f59e0b]' },
-  'B+': { chip: 'bg-lime-300 text-black', from: '#a3ff47', to: '#22e3ff', glow: 'shadow-[0_0_30px_-6px_#a3ff47]' },
-  B: { chip: 'bg-cyan-300 text-black', from: '#22e3ff', to: '#3b82f6', glow: 'shadow-[0_0_30px_-6px_#22e3ff]' },
-  C: { chip: 'bg-violet-400 text-white', from: '#8b5cf6', to: '#ff2e97', glow: 'shadow-[0_0_30px_-6px_#8b5cf6]' },
-  D: { chip: 'bg-slate-300 text-black', from: '#94a3b8', to: '#475569', glow: 'shadow-[0_0_30px_-6px_#94a3b8]' },
+  A: { chip: 'bg-[#fbbf24] text-black', from: '#f59e0b', to: '#ef4444', glow: 'shadow-[0_0_30px_-6px_#f59e0b]' },
+  'B+': { chip: 'bg-[#bef264] text-black', from: '#a3ff47', to: '#22e3ff', glow: 'shadow-[0_0_30px_-6px_#a3ff47]' },
+  B: { chip: 'bg-[#67e8f9] text-black', from: '#22e3ff', to: '#3b82f6', glow: 'shadow-[0_0_30px_-6px_#22e3ff]' },
+  C: { chip: 'bg-[#a78bfa] text-black', from: '#8b5cf6', to: '#ff2e97', glow: 'shadow-[0_0_30px_-6px_#8b5cf6]' },
+  D: { chip: 'bg-[#cbd5e1] text-black', from: '#94a3b8', to: '#475569', glow: 'shadow-[0_0_30px_-6px_#94a3b8]' },
 };
 export const catOf = (code) => CAT[code] || CAT.D;
 export const CAT_COLOR = Object.fromEntries(Object.entries(CAT).map(([k, v]) => [k, v.chip]));
